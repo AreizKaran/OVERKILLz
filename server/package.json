@@ -4,10 +4,13 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "node test/auth.test.mjs",
+    "test": "node test/auth.test.mjs && node test/contract.test.mjs && node test/routes.test.mjs",
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed.js",
+    "test:auth": "node test/auth.test.mjs",
+    "test:contract": "node test/contract.test.mjs",
+    "test:routes": "node test/routes.test.mjs"
   },
   "keywords": [],
   "author": "",

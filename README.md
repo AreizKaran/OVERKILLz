@@ -36,8 +36,22 @@ npm install
 cp .env.example .env        # then set JWT_SECRET
 npm run seed                # demo institute: 6 students, 3 faculty, 3 courses, 6 weeks of attendance
 npm run dev                 # http://localhost:4000
-npm test                    # authorisation + JWT tests
+npm test                    # 63 checks, no database required
 ```
+
+The server suite runs without MongoDB:
+
+| Suite | Checks | What it covers |
+|---|---|---|
+| `test:auth` | 12 | Role gating, own-record scoping, JWT shape and rejection |
+| `test:contract` | 31 | Schema validation, and that every field the UI reads survives the server → client normalisation |
+| `test:routes` | 20 | Route authorisation over real HTTP with stubbed models |
+
+`test:contract` is the one that matters most: it builds documents with the real
+Mongoose schemas, shapes them exactly as each route handler does, runs them
+through the client's normalisers, and fails naming any field that arrives
+undefined. That is the mismatch class you would otherwise only discover on first
+connection to a live database.
 
 **Client tests** (Playwright, no test runner — see `client/test/README.md`):
 
@@ -157,15 +171,16 @@ week timetable becomes a day-by-day list.
 
 ## What is not built
 
-- **The live API path has never run against a real server.** It is covered by tests that
-  intercept the network (credentials sent, bearer token attached, API payloads rendered,
-  401 clears the session, unreachable server degrades gracefully), but no MongoDB was
-  reachable from the machine this was built on, so the full stack is unverified end to
-  end. Expect to shake out field-name mismatches on first connection.
+- **The live API path has never run against a real server.** No MongoDB was reachable
+  from the machine this was built on. The gap is narrowed from both sides — the browser
+  tests drive the real fetch path against an intercepted API, and the contract test
+  checks every payload shape against the real schemas — but the two halves have never
+  been connected over a socket. What remains unproven is the wiring itself: connection
+  handling, populate behaviour on real documents, and index enforcement.
 - **Some screens have no backend at all.** Timetable, Documents, Departments and Access
   Control, the monthly-attendance and CGPA-trend charts, and the admin analytics other
   than the KPI row read fixed sample data, because the server has no model or endpoint
   behind them. Building those is server work, not wiring.
 - File upload UI is present; **Multer wiring** for real uploads is not.
-- No component-level unit tests. Coverage is the server's authorisation tests plus the
-  two Playwright scripts.
+- No component-level unit tests. Coverage is 63 server checks plus 120 browser checks
+  (96 responsive, 24 live-API).
