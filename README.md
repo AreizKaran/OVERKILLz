@@ -46,6 +46,34 @@ npm run test:responsive     # needs the app on :5173
 npm run test:api            # needs VITE_API_URL set and the app on :5174
 ```
 
+## Deploying
+
+`client/vercel.json` is committed and configured — Vite preset, an SPA rewrite so
+deep links like `/app/attendance` resolve instead of 404ing, immutable caching for
+hashed assets, and nosniff/frame/referrer headers.
+
+To deploy, import the repository at [vercel.com/new](https://vercel.com/new):
+
+1. Pick `AreizKaran/OVERKILLz`.
+2. Set **Root Directory** to `client`. Everything else is auto-detected.
+3. Deploy.
+
+That gives a git-linked project that redeploys on every push. Leave `VITE_API_URL`
+unset and the deployment runs in sample-data mode, which needs no backend — the
+right setting for a demo. Set it later to point at a hosted API.
+
+## Database
+
+An Atlas free cluster named `smit-ams` exists in the project, reachable at:
+
+```
+mongodb+srv://<user>:<password>@smit-ams.xvdogc0.mongodb.net/smit-ams
+```
+
+It has no database user yet. Create one under **Atlas → Database Access**, add your
+IP under **Network Access**, then put the resulting URI in `server/.env` as
+`MONGO_URI` and run `npm run seed`.
+
 ## Design system
 
 The visual style was selected with the `ui-ux-pro-max` skill (**Minimalism & Swiss** —
