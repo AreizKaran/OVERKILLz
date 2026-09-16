@@ -1,0 +1,124 @@
+# SMIT Academic Management System
+
+A role-based academic management platform for Sikkim Manipal Institute of Technology —
+students, faculty and administrators in one system, covering academics, attendance,
+assignments, examinations, results, fees, notices, faculty directory, feedback and reporting.
+
+```
+client/   React 19 + Vite + Tailwind + React Router + Framer Motion + Recharts
+server/   Express + Mongoose + JWT + bcrypt
+```
+
+## Running it
+
+**Frontend** (works standalone — it ships with realistic sample data):
+
+```bash
+cd client
+npm install
+npm run dev          # http://localhost:5173
+```
+
+Sign in as **Student**, **Faculty** or **Administrator** — pick a role and use any
+password of 6+ characters. Each role gets a different dashboard, navigation and
+permission set.
+
+**Backend** (needs MongoDB on `localhost:27017`):
+
+```bash
+cd server
+npm install
+cp .env.example .env        # then set JWT_SECRET
+npm run seed                # demo institute: 6 students, 3 faculty, 3 courses, 6 weeks of attendance
+npm run dev                 # http://localhost:4000
+npm test                    # authorisation + JWT tests
+```
+
+## Design system
+
+The visual style was selected with the `ui-ux-pro-max` skill (**Minimalism & Swiss** —
+its recommended style for enterprise dashboards: light/dark capable, low accessibility
+risk, requires 4.5:1 text contrast, keyboard operability, visible focus and
+reduced-motion support). Palette and typography follow the project brief.
+
+### Colour
+
+Applied 60/30/10 — neutral surfaces dominate, navy/blue carries structure, and the
+remaining 10% is reserved for status. Colour never carries meaning alone: every status
+pairs a hue with an icon and a text label.
+
+| Role | Hex | Used for |
+|---|---|---|
+| Navy | `#14213D` | Sidebar, primary surfaces, brand |
+| Blue | `#2563EB` | Interactive elements, primary data series |
+| Orange | `#F97316` | Accent, notification badge, active markers |
+| Emerald | `#10B981` | Healthy attendance, paid fees, success |
+| Amber | `#F59E0B` | Warning attendance, pending payment |
+| Coral | `#EF4444` | Critical attendance, overdue, destructive |
+| Canvas / Surface | `#F8FAFC` / `#FFFFFF` | Page and card backgrounds |
+| Ink / Muted | `#0F172A` / `#64748B` | Primary and secondary text |
+| Line | `#E2E8F0` | Borders and dividers |
+
+Attendance thresholds are a single source of truth in `client/src/lib/hooks.js`
+(`attendanceTone`): **≥80% healthy · 75–79% warning · <75% critical**. Every ring, bar,
+badge and table cell reads from it, so the 75% condonation rule renders identically
+everywhere.
+
+### Type
+
+Inter throughout, 16px base. Numbers that get compared — percentages, marks, currency,
+counts — use `font-variant-numeric: tabular-nums` (the `.tnum` class) so columns don't
+jitter as values change.
+
+### Motion
+
+Motion is used to explain, not decorate: counters animate from zero, rings and bars draw
+to value, the active sidebar marker travels between items via a shared layout element,
+and route changes fade up 12px over 280ms. Every animation is disabled under
+`prefers-reduced-motion` by a global rule in `index.css`, and the login graphic's
+floating cards drop to a static state via `useReducedMotion`.
+
+## Accessibility and responsive behaviour
+
+Verified with Playwright against the breakpoints in the brief:
+
+- **No horizontal scroll** at 320 / 375 / 414 / 768 / 1024 / 1440px across all 13 routes
+  (78 checks).
+- **Touch targets** are ≥44×44px at 375px — buttons, inputs, nav items and the
+  attendance present/late/absent controls.
+- Dialogs trap focus, close on Escape and restore focus to their trigger.
+- Toasts announce via `aria-live="polite"` without stealing focus.
+- Forms use visible labels, `aria-invalid` and `role="alert"` error text tied by
+  `aria-describedby`.
+- A skip link precedes the shell; the viewport meta does not disable zoom.
+
+Mobile is a different layout, not a scaled one: bottom navigation capped at five items
+with a slide-up drawer for everything else, tables re-composed as stacked cards, and the
+week timetable becomes a day-by-day list.
+
+## Security model
+
+- Passwords hashed with bcrypt (cost 12) and never selected by default.
+- JWT carries only `sub` and `role`; the server refuses to start without `JWT_SECRET`.
+- `authorise(...roles)` gates staff-only routes; `ownRecordOnly()` stops a student
+  reading another student's attendance, marks or fees by editing the URL.
+- Students receive their own assignment submission only — never a classmate's — and the
+  exam seating plan is stripped to their own seat.
+- Faculty can mark attendance and grade only for courses they are assigned to.
+- Marks entry (faculty) is separate from result publication (admin).
+- Feedback is structurally anonymous: responses carry no student reference, and a
+  separate receipt collection enforces one-per-semester. Aggregates are withheld below
+  five responses.
+- Login is rate-limited and returns one message for both unknown user and wrong
+  password, so accounts can't be enumerated.
+
+## What is not built
+
+- **Documents, Departments and Access Control** are routed and navigable but render a
+  placeholder — the module screens are not implemented.
+- The **frontend runs on sample data**; it is not yet wired to the API. Payloads in
+  `client/src/data/mock.js` match the server's response shapes, so switching over is a
+  change of data source rather than of components.
+- File upload UI is present; **Multer wiring** for real uploads is not.
+- Tests cover authorisation and JWT handling. There are **no component or end-to-end
+  tests**; responsive and accessibility checks were run as one-off Playwright scripts.
