@@ -1,14 +1,31 @@
 import { useState } from 'react'
 import { BookOpen, User, Award, CalendarCheck, FileText, ChevronRight, Percent } from 'lucide-react'
-import { Card, SectionHead, Badge, Bar } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, Bar, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
 import { attendanceTone } from '../../lib/hooks'
 import { useAuth } from '../../lib/auth'
-import { COURSES, ASSIGNMENTS } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
 
 export default function Academics() {
   const { user } = useAuth()
   const [open, setOpen] = useState(null)
+  const { loading, error, data, reload } = useResource(source.courses)
+  const work = useResource(source.assignments)
+
+  if (loading) return (
+    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Card key={i} className="p-5 space-y-3">
+          <Skeleton className="h-3 w-24" /><Skeleton className="h-5 w-2/3" /><Skeleton className="h-2 w-full" /><Skeleton className="h-2 w-full" />
+        </Card>
+      ))}
+    </div>
+  )
+  if (error) return <Card><ErrorState message={error} onRetry={reload} /></Card>
+
+  const COURSES = data
+  const ASSIGNMENTS = work.data ?? []
   const credits = COURSES.reduce((s, c) => s + c.credits, 0)
 
   return (

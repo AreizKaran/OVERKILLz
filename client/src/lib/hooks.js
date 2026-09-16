@@ -73,3 +73,25 @@ export function useResource(loader, deps = []) {
 
   return { ...state, reload: () => setNonce((n) => n + 1) }
 }
+
+/**
+ * Drives a write: exposes `pending` for the button's loading state and routes
+ * failures to a caller-supplied handler so the server's message reaches the UI.
+ */
+export function useMutation(fn, { onSuccess, onError } = {}) {
+  const [pending, setPending] = useState(false)
+  const run = async (...args) => {
+    setPending(true)
+    try {
+      const result = await fn(...args)
+      onSuccess?.(result)
+      return result
+    } catch (err) {
+      onError?.(err?.message ?? 'That did not go through. Try again.')
+      return null
+    } finally {
+      setPending(false)
+    }
+  }
+  return { run, pending }
+}

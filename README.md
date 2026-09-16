@@ -134,13 +134,10 @@ week timetable becomes a day-by-day list.
   401 clears the session, unreachable server degrades gracefully), but no MongoDB was
   reachable from the machine this was built on, so the full stack is unverified end to
   end. Expect to shake out field-name mismatches on first connection.
-- **Not every page reads through `source.js` yet.** Notices, faculty, fees, attendance
-  and assignments do. Academics, results, exams, timetable, students and the three
-  dashboards still import sample data directly, so they show sample values even in live
-  mode. The loaders they need already exist in `source.js`.
-- **Write paths are not wired.** Submitting an assignment, paying fees, marking
-  attendance and publishing a notice update local state and raise a toast; they do not
-  yet call the API, though the client methods exist.
+- **Some screens have no backend at all.** Timetable, Documents, Departments and Access
+  Control, the monthly-attendance and CGPA-trend charts, and the admin analytics other
+  than the KPI row read fixed sample data, because the server has no model or endpoint
+  behind them. Building those is server work, not wiring.
 - File upload UI is present; **Multer wiring** for real uploads is not.
 - No component-level unit tests. Coverage is the server's authorisation tests plus the
   two Playwright scripts.

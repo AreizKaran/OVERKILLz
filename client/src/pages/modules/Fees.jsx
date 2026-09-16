@@ -4,8 +4,8 @@ import { Card, SectionHead, Badge, Bar, ErrorState, Skeleton } from '../../compo
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useCountUp, inr } from '../../lib/hooks'
-import { source } from '../../data/source'
-import { useResource } from '../../lib/hooks'
+import { source, mutate } from '../../data/source'
+import { useResource, useMutation } from '../../lib/hooks'
 import { useAuth } from '../../lib/auth'
 
 export default function Fees() {
@@ -13,6 +13,9 @@ export default function Fees() {
   const { user } = useAuth()
   const [pay, setPay] = useState(false)
   const { loading, error, data: FEES, reload } = useResource(() => source.fees(user.id), [user.id])
+  const payment = useMutation((amount) => mutate.payFees(user.id, amount, 'UPI'),
+    { onSuccess: (r) => { toast(`Payment successful. Receipt ${r?.receipt ?? 'issued'}.`); reload() },
+      onError: (m) => toast(m, 'error') })
   const pct = FEES ? Math.round((FEES.paid / FEES.total) * 100) : 0
   const paid = useCountUp(FEES?.paid ?? 0)
 
@@ -129,8 +132,9 @@ export default function Fees() {
 
       <Modal open={pay} onClose={() => setPay(false)} title="Confirm payment"
         footer={<><button className="btn-ghost" onClick={() => setPay(false)}>Cancel</button>
-                 <button className="btn-primary" onClick={() => { setPay(false); toast(`Payment of ${inr(FEES.pending)} successful.`) }}>
-                   Pay {inr(FEES.pending)}</button></>}>
+                 <button className="btn-primary" disabled={payment.pending}
+                   onClick={async () => { const amt = FEES.pending; setPay(false); await payment.run(amt) }}>
+                   {payment.pending ? 'Processing…' : `Pay ${inr(FEES.pending)}`}</button></>}>
         <div className="space-y-4">
           <div className="p-4 rounded-lg bg-subtle flex justify-between items-center">
             <div>

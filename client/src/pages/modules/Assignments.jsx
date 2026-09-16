@@ -4,8 +4,8 @@ import { Card, SectionHead, Badge, EmptyState, ErrorState, Skeleton } from '../.
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { useResource } from '../../lib/hooks'
-import { source } from '../../data/source'
+import { useResource, useMutation } from '../../lib/hooks'
+import { source, mutate } from '../../data/source'
 
 const TONE = { pending: 'warn', submitted: 'info', graded: 'ok', overdue: 'bad', late: 'bad' }
 const TABS = ['All', 'Pending', 'Submitted', 'Graded', 'Overdue']
@@ -29,7 +29,15 @@ export default function Assignments() {
     })
   }, [data, tab, q])
 
-  const doSubmit = () => { const t = submit.title; setSubmit(null); toast(`“${t}” submitted successfully.`) }
+  const submitWork = useMutation(
+    (a) => mutate.submitAssignment(a.id, { filename: 'submission.pdf' }, ''),
+    { onSuccess: (r) => { toast(r?.late ? 'Submitted — recorded as late.' : 'Submitted successfully.'); reload() },
+      onError: (m) => toast(m, 'error') })
+
+  const createWork = useMutation((payload) => mutate.createAssignment(payload),
+    { onSuccess: () => { toast('Assignment published.'); reload() }, onError: (m) => toast(m, 'error') })
+
+  const doSubmit = async () => { const a = submit; setSubmit(null); await submitWork.run(a) }
 
   return (
     <div className="space-y-5">
@@ -119,7 +127,8 @@ export default function Assignments() {
 
       <Modal open={!!submit} onClose={() => setSubmit(null)} title="Submit assignment"
         footer={<><button className="btn-ghost" onClick={() => setSubmit(null)}>Cancel</button>
-                 <button className="btn-primary" onClick={doSubmit}>Confirm submission</button></>}>
+                 <button className="btn-primary" onClick={doSubmit} disabled={submitWork.pending}>
+                   {submitWork.pending ? 'Submitting…' : 'Confirm submission'}</button></>}>
         {submit && (
           <div className="space-y-4">
             <div className="p-3 rounded-lg bg-subtle">
@@ -149,7 +158,9 @@ export default function Assignments() {
 
       <Modal open={create} onClose={() => setCreate(false)} title="Create assignment"
         footer={<><button className="btn-ghost" onClick={() => setCreate(false)}>Cancel</button>
-                 <button className="btn-primary" onClick={() => { setCreate(false); toast('Assignment published to 62 students.') }}>Publish</button></>}>
+                 <button className="btn-primary" disabled={createWork.pending}
+                   onClick={async () => { setCreate(false); await createWork.run({ title: 'New assignment', course: rows[0]?.courseId, maxMarks: 20, due: new Date(Date.now() + 6048e5) }) }}>
+                   {createWork.pending ? 'Publishing…' : 'Publish'}</button></>}>
         <div className="space-y-4">
           <div><label className="label" htmlFor="at">Title</label><input id="at" className="field" placeholder="e.g. Red-Black Tree Implementation" /></div>
           <div className="grid sm:grid-cols-2 gap-3">

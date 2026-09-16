@@ -4,7 +4,9 @@ import { BarChart, Bar as RBar, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { Card, SectionHead, Badge, EmptyState } from '../../components/ui/Primitives'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { FACULTY, FEEDBACK_CRITERIA } from '../../data/mock'
+import { FEEDBACK_CRITERIA } from '../../data/mock'
+import { source, mutate } from '../../data/source'
+import { useResource, useMutation } from '../../lib/hooks'
 
 const AGG = FEEDBACK_CRITERIA.map((c, i) => ({ criterion: c.label, score: [4.6, 4.3, 4.7, 4.2][i] }))
 
@@ -31,6 +33,8 @@ export default function Feedback() {
   const [selected, setSelected] = useState(null)
   const [scores, setScores] = useState({})
   const [done, setDone] = useState([])
+  const { data: facultyList } = useResource(source.faculty)
+  const FACULTY = facultyList ?? []
 
   // Students submit; faculty and admin see aggregates only — never per-student rows.
   if (user.role !== 'student') {
@@ -88,10 +92,14 @@ export default function Feedback() {
     )
   }
 
-  const submit = () => {
-    setDone((d) => [...d, selected.id])
-    setSelected(null); setScores({})
-    toast('Feedback submitted anonymously. Thank you.')
+  const sending = useMutation((payload) => mutate.submitFeedback(payload),
+    { onSuccess: () => toast('Feedback submitted anonymously. Thank you.'),
+      onError: (m) => toast(m, 'error') })
+
+  const submit = async () => {
+    const f = selected
+    const ok = await sending.run({ faculty: f.id, semester: 6, scores })
+    if (ok) { setDone((d) => [...d, f.id]); setSelected(null); setScores({}) }
   }
 
   const complete = FEEDBACK_CRITERIA.every((c) => scores[c.key])
@@ -121,8 +129,8 @@ export default function Feedback() {
           </div>
           <div className="flex gap-2 mt-5">
             <button className="btn-ghost flex-1" onClick={() => { setSelected(null); setScores({}) }}>Cancel</button>
-            <button className="btn-primary flex-1" disabled={!complete} onClick={submit}>
-              {complete ? 'Submit feedback' : `Rate all ${FEEDBACK_CRITERIA.length} criteria`}
+            <button className="btn-primary flex-1" disabled={!complete || sending.pending} onClick={submit}>
+              {sending.pending ? 'Submitting…' : complete ? 'Submit feedback' : `Rate all ${FEEDBACK_CRITERIA.length} criteria`}
             </button>
           </div>
         </Card>

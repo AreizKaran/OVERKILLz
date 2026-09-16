@@ -66,11 +66,13 @@ export default function AccessControl() {
           {PERMISSIONS.map((p) => (
             <div key={p.key} className="p-4 rounded-xl border border-line">
               <div className="font-medium text-sm">{p.label}</div>
-              <dl className="grid grid-cols-3 gap-2 mt-3">
+              {/* Stacked rather than three columns: the level chips cannot shrink,
+                  and a 3-up grid overflows below ~420px. */}
+              <dl className="mt-3 divide-y divide-line">
                 {ROLES.map((r) => (
-                  <div key={r} className="text-center">
-                    <dt className="text-xs text-muted capitalize mb-1.5">{r}</dt>
-                    <dd className="flex justify-center"><Level value={p[r]} /></dd>
+                  <div key={r} className="flex items-center justify-between gap-3 py-2">
+                    <dt className="text-xs text-muted capitalize">{r}</dt>
+                    <dd className="shrink-0"><Level value={p[r]} /></dd>
                   </div>
                 ))}
               </dl>
@@ -80,11 +82,11 @@ export default function AccessControl() {
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-5">
-        <Card className="p-5">
+        <Card className="p-5 min-w-0">
           <SectionHead title="Role assignment" sub="Changing a role takes effect on the account's next sign-in" />
           <div className="divide-y divide-line -my-1">
             {USERS.map((u) => (
-              <div key={u.id} className="flex items-center gap-3 py-3">
+              <div key={u.id} className="flex items-center gap-2 py-3 min-w-0">
                 <div className="w-9 h-9 rounded-full bg-navy text-white grid place-items-center text-xs font-semibold shrink-0">
                   {u.name.split(' ').map((x) => x[0]).slice(0, 2).join('')}
                 </div>
@@ -104,7 +106,7 @@ export default function AccessControl() {
           </div>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-5 min-w-0">
           <SectionHead title="Audit trail" sub="Privileged actions across the institute" />
           <div className="divide-y divide-line -my-1">
             {AUDIT_LOG.map((a) => (

@@ -4,7 +4,7 @@ const browser = await chromium.launch(EXECUTABLE ? { executablePath: EXECUTABLE 
 const WIDTHS = [320, 375, 414, 768, 1024, 1440]
 const ROUTES = ['/app', '/app/academics', '/app/attendance', '/app/assignments', '/app/exams',
                 '/app/results', '/app/timetable', '/app/faculty', '/app/notices', '/app/fees',
-                '/app/feedback', '/app/profile', '/app/settings', '/app/documents']
+                '/app/feedback', '/app/profile', '/app/settings', '/app/documents', '/app/departments', '/app/access']
 const overflow = [], smallTargets = new Set()
 
 for (const w of WIDTHS) {

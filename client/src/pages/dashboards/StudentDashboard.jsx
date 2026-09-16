@@ -7,10 +7,11 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart,
 } from 'recharts'
 import StatCard from '../../components/ui/StatCard'
-import { Card, SectionHead, Badge, ProgressRing, Bar, EmptyState, SkeletonCard } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, ProgressRing, Bar, EmptyState, SkeletonCard, ErrorState } from '../../components/ui/Primitives'
 import { useAuth } from '../../lib/auth'
-import { useAsyncData, attendanceTone } from '../../lib/hooks'
-import { COURSES, ASSIGNMENTS, NOTICES, CGPA_TREND, TIMETABLE, EXAMS } from '../../data/mock'
+import { useResource, attendanceTone } from '../../lib/hooks'
+import { CGPA_TREND, TIMETABLE } from '../../data/mock'
+import { source } from '../../data/source'
 
 const greeting = () => {
   const h = new Date().getHours()
@@ -21,11 +22,25 @@ const STATUS = { pending: 'warn', submitted: 'info', graded: 'ok', overdue: 'bad
 
 export default function StudentDashboard() {
   const { user } = useAuth()
-  const { loading } = useAsyncData(true, 450)
+  const att    = useResource(() => source.attendance(user.id), [user.id])
+  const assign = useResource(source.assignments)
+  const notes  = useResource(source.notices)
+  const exams  = useResource(source.exams)
+
+  const loading = att.loading || assign.loading
+  const failed  = att.error ?? assign.error
+
   const today = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()]
   const classes = TIMETABLE[today] ?? []
+  const COURSES = att.data?.courses ?? []
+  const ASSIGNMENTS = assign.data ?? []
+  const NOTICES = notes.data ?? []
+  const EXAMS = exams.data ?? []
+  const overall = att.data?.overall ?? 0
   const pending = ASSIGNMENTS.filter((a) => a.status === 'pending' || a.status === 'overdue')
-  const tone = attendanceTone(user.attendance)
+  const tone = attendanceTone(overall)
+
+  if (failed) return <Card><ErrorState message={failed} onRetry={() => { att.reload(); assign.reload() }} /></Card>
 
   return (
     <div className="space-y-5">
@@ -42,7 +57,7 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
         {loading ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />) : (
           <>
-            <StatCard index={0} icon={CalendarCheck} label="Overall attendance" value={user.attendance} suffix="%" tone={tone.key} foot={`${tone.label} · 75% required`} />
+            <StatCard index={0} icon={CalendarCheck} label="Overall attendance" value={overall} suffix="%" tone={tone.key} foot={`${tone.label} · 75% required`} />
             <StatCard index={1} icon={TrendingUp}   label="Current CGPA"      value={user.cgpa} decimals={2} tone="brand" foot="+0.19 since Sem 4" />
             <StatCard index={2} icon={ClipboardList} label="Pending assignments" value={pending.length} tone="warn" foot="1 overdue" />
             <StatCard index={3} icon={FileText}     label="Upcoming exams"    value={EXAMS.length} tone="navy" foot="From 12 Oct 2026" />
@@ -55,7 +70,7 @@ export default function StudentDashboard() {
         <Card className="p-5 lg:col-span-1 min-w-0">
           <SectionHead title="Attendance overview" sub="Subject-wise, this semester" />
           <div className="flex justify-center py-2">
-            <ProgressRing value={user.attendance} color={tone.ring} sub={tone.label} />
+            <ProgressRing value={overall} color={tone.ring} sub={tone.label} />
           </div>
           <div className="space-y-3 mt-4">
             {COURSES.slice(0, 4).map((c) => {

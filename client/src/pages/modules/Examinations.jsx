@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { CalendarDays, MapPin, Clock, Armchair, Download } from 'lucide-react'
-import { Card, SectionHead, Badge } from '../../components/ui/Primitives'
-import { EXAMS } from '../../data/mock'
+import { Card, SectionHead, Badge, ErrorState, EmptyState, Skeleton } from '../../components/ui/Primitives'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
 
 function useCountdown(target) {
   const [now, setNow] = useState(() => Date.now())
@@ -15,8 +16,19 @@ function useCountdown(target) {
 }
 
 export default function Examinations() {
+  const { loading, error, data, reload } = useResource(source.exams)
+  const EXAMS = data ?? []
   const next = EXAMS[0]
-  const { days, hours, mins } = useCountdown(`${next.date}T10:00:00+05:30`)
+  // The hook must run on every render, so it takes a stable fallback date.
+  const { days, hours, mins } = useCountdown(
+    next ? `${String(next.date).slice(0, 10)}T10:00:00+05:30` : new Date().toISOString())
+
+  if (loading) return <Card className="p-6 h-48"><Skeleton className="h-full w-full" /></Card>
+  if (error) return <Card><ErrorState message={error} onRetry={reload} /></Card>
+  if (!next) return (
+    <Card><EmptyState icon={CalendarDays} title="No examinations scheduled"
+      body="The schedule for the next examination cycle has not been published yet." /></Card>
+  )
 
   return (
     <div className="space-y-5">

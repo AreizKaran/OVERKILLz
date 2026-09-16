@@ -5,7 +5,7 @@
  * `isLive`. Live responses are normalised here to the sample-data shape, which
  * is what the components were written against.
  */
-import { api, isLive } from '../lib/api'
+import { api, isLive, request } from '../lib/api'
 import * as mock from './mock'
 
 const delay = (value, ms = 420) => new Promise((r) => setTimeout(() => r(value), ms))
@@ -121,3 +121,29 @@ export const source = {
 }
 
 export { isLive }
+
+/* ------------------------------------------------------------ mutations --- */
+/**
+ * In live mode these hit the API and throw ApiError on failure, so callers can
+ * surface the server's message. In sample mode they resolve after a short delay
+ * so the optimistic UI and button loading states still exercise the same path.
+ */
+export const mutate = {
+  submitAssignment: (id, file, remarks) =>
+    isLive ? api.submitAssignment(id, file, remarks) : delay({ ok: true }, 650),
+
+  markAttendance: (course, date, records) =>
+    isLive ? api.markAttendance(course, date, records) : delay({ ok: true }, 650),
+
+  payFees: (studentId, amount, mode) =>
+    isLive ? api.payFees(studentId, amount, mode) : delay({ receipt: `SMIT/2026/${String(Date.now()).slice(-6)}` }, 800),
+
+  publishNotice: (notice) =>
+    isLive ? api.publishNotice(notice) : delay({ ok: true }, 650),
+
+  submitFeedback: (payload) =>
+    isLive ? api.submitFeedback(payload) : delay({ ok: true }, 650),
+
+  createAssignment: (payload) =>
+    isLive ? request('/api/assignments', { method: 'POST', body: payload }) : delay({ ok: true }, 650),
+}

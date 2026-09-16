@@ -4,8 +4,8 @@ import { Card, SectionHead, Badge, EmptyState, ErrorState, Skeleton } from '../.
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { source } from '../../data/source'
-import { useResource } from '../../lib/hooks'
+import { source, mutate } from '../../data/source'
+import { useResource, useMutation } from '../../lib/hooks'
 
 const CATS = ['All', 'Academic', 'Examination', 'Administration', 'Events', 'Emergency', 'General']
 const CAT_TONE = { Emergency: 'bad', Examination: 'warn', Academic: 'info', Administration: 'info', Events: 'ok', General: 'neutral' }
@@ -19,6 +19,8 @@ export default function Notices() {
   const [compose, setCompose] = useState(false)
   const canPublish = user.role !== 'student'
   const { loading, error, data, reload } = useResource(source.notices)
+  const publish = useMutation((n) => mutate.publishNotice(n),
+    { onSuccess: () => { toast('Notice published.'); reload() }, onError: (m) => toast(m, 'error') })
 
   const rows = useMemo(() => (data ?? []).filter((n) => {
     const byCat = cat === 'All' || n.cat === cat
@@ -107,7 +109,9 @@ export default function Notices() {
 
       <Modal open={compose} onClose={() => setCompose(false)} title="Publish a notice"
         footer={<><button className="btn-ghost" onClick={() => setCompose(false)}>Cancel</button>
-                 <button className="btn-primary" onClick={() => { setCompose(false); toast('Notice published to all students.') }}>Publish</button></>}>
+                 <button className="btn-primary" disabled={publish.pending}
+                   onClick={async () => { setCompose(false); await publish.run({ title: 'New notice', body: '', category: 'General', priority: 'normal', audience: ['student'] }) }}>
+                   {publish.pending ? 'Publishing…' : 'Publish'}</button></>}>
         <div className="space-y-4">
           <div><label className="label" htmlFor="nt">Title</label><input id="nt" className="field" placeholder="Notice heading" /></div>
           <div className="grid sm:grid-cols-2 gap-3">

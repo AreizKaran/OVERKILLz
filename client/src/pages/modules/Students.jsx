@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { Search, Users, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card, SectionHead, Badge, EmptyState, Bar } from '../../components/ui/Primitives'
 import { useToast } from '../../components/ui/Toast'
-import { attendanceTone } from '../../lib/hooks'
+import { attendanceTone, useResource } from '../../lib/hooks'
+import { source, isLive } from '../../data/source'
 import { useAuth } from '../../lib/auth'
 import { ROSTER } from '../../data/mock'
 
@@ -26,14 +27,18 @@ export default function Students() {
   const [q, setQ] = useState('')
   const [page, setPage] = useState(1)
 
+  // Live mode pages server-side; sample mode filters the generated roster.
+  const live = useResource(() => (isLive ? source.students({ q, page, limit: PAGE }) : Promise.resolve(null)), [q, page])
+
   const rows = useMemo(() => {
+    if (isLive) return live.data?.students ?? []
     const t = q.toLowerCase()
     return ALL.filter((s) => !q || s.name.toLowerCase().includes(t) || s.reg.includes(t))
-  }, [q])
+  }, [q, live.data])
 
-  const pages = Math.max(1, Math.ceil(rows.length / PAGE))
+  const pages = isLive ? (live.data?.pages ?? 1) : Math.max(1, Math.ceil(rows.length / PAGE))
   const current = Math.min(page, pages)
-  const view = rows.slice((current - 1) * PAGE, current * PAGE)
+  const view = isLive ? rows : rows.slice((current - 1) * PAGE, current * PAGE)
 
   return (
     <div className="space-y-5">
@@ -114,7 +119,7 @@ export default function Students() {
 
             <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-line">
               <p className="text-xs text-muted tnum">
-                Showing {(current - 1) * PAGE + 1}–{Math.min(current * PAGE, rows.length)} of {rows.length}
+                Showing {(current - 1) * PAGE + 1}–{(current - 1) * PAGE + view.length} of {isLive ? (live.data?.total ?? view.length) : rows.length}
               </p>
               <div className="flex gap-1.5">
                 <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={current === 1}

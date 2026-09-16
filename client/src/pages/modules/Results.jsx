@@ -1,12 +1,27 @@
 import { Award, TrendingUp, Download } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Card, SectionHead, Badge, ProgressRing } from '../../components/ui/Primitives'
-import { RESULTS, CGPA_TREND } from '../../data/mock'
+import { Card, SectionHead, Badge, ProgressRing, ErrorState, Skeleton } from '../../components/ui/Primitives'
+import { CGPA_TREND } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
+import { useAuth } from '../../lib/auth'
 
 const GRADE_TONE = { 'A+': 'ok', A: 'ok', 'B+': 'info', B: 'info', C: 'warn', F: 'bad' }
 
 export default function Results() {
-  const credits = RESULTS.reduce((s, r) => s + r.credits, 0)
+  const { user } = useAuth()
+  const { loading, error, data, reload } = useResource(() => source.results(user.id), [user.id])
+
+  if (loading) return (
+    <div className="grid lg:grid-cols-3 gap-5">
+      <Card className="p-5 h-72 grid place-items-center"><Skeleton className="w-36 h-36 rounded-full" /></Card>
+      <Card className="p-5 lg:col-span-2 h-72"><Skeleton className="h-full w-full" /></Card>
+    </div>
+  )
+  if (error) return <Card><ErrorState message={error} onRetry={reload} /></Card>
+
+  const RESULTS = data.results
+  const credits = data.credits
   const sgpa = 8.81
 
   return (

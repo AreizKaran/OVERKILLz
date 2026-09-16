@@ -7,7 +7,9 @@ import { Card, SectionHead, Badge, EmptyState } from '../../components/ui/Primit
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { FACULTY_CLASSES, ROSTER, COURSES } from '../../data/mock'
+import { FACULTY_CLASSES, ROSTER } from '../../data/mock'
+import { mutate } from '../../data/source'
+import { useMutation } from '../../lib/hooks'
 
 const GRADE_SPREAD = [
   { band: 'O (90+)', n: 8 }, { band: 'A+ (80-89)', n: 17 }, { band: 'A (70-79)', n: 21 },
@@ -27,10 +29,18 @@ export default function FacultyDashboard() {
 
   const setOne = (id, v) => setMarks((m) => ({ ...m, [id]: v }))
 
-  const save = () => {
+  const saving = useMutation(
+    ({ course, records }) => mutate.markAttendance(course, new Date().toISOString(), records),
+    { onSuccess: () => toast('Attendance updated successfully.'),
+      onError: (m) => toast(m, 'error') })
+
+  const save = async () => {
+    const cls = marking
     const present = Object.values(marks).filter((v) => v === 'present').length
+    const records = ROSTER.map((s) => ({ student: s.id, status: marks[s.id] }))
     setMarking(null)
-    toast(`Attendance updated — ${present}/${ROSTER.length} present in ${marking.course}.`)
+    const ok = await saving.run({ course: cls.courseId ?? cls.course, records })
+    if (ok) toast(`${present}/${ROSTER.length} marked present in ${cls.course}.`, 'info')
   }
 
   const counts = Object.values(marks).reduce((a, v) => ({ ...a, [v]: (a[v] || 0) + 1 }), {})
@@ -133,7 +143,8 @@ export default function FacultyDashboard() {
         footer={
           <>
             <button className="btn-ghost" onClick={() => setMarking(null)}>Cancel</button>
-            <button className="btn-primary" onClick={save}>Save attendance</button>
+            <button className="btn-primary" onClick={save} disabled={saving.pending}>
+              {saving.pending ? 'Saving…' : 'Save attendance'}</button>
           </>
         }>
         <div className="flex items-center justify-between mb-4 text-sm">

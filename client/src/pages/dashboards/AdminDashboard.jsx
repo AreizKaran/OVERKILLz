@@ -5,8 +5,10 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
 import StatCard from '../../components/ui/StatCard'
-import { Card, SectionHead } from '../../components/ui/Primitives'
-import { ADMIN_KPIS, ENROLMENT_TREND, DEPT_ATTENDANCE, FEE_SPLIT, ACTIVITY } from '../../data/mock'
+import { Card, SectionHead, ErrorState, SkeletonCard } from '../../components/ui/Primitives'
+import { ENROLMENT_TREND, DEPT_ATTENDANCE, FEE_SPLIT, ACTIVITY } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
 
 const ICONS = { attendance: CalendarCheck, fee: Wallet, notice: Megaphone, assignment: FileCheck2, student: UserPlus }
 
@@ -18,6 +20,7 @@ const FILTERS = {
 
 export default function AdminDashboard() {
   const [filters, setFilters] = useState({ Department: 'All departments', Semester: 'All semesters', Year: '2026-27' })
+  const { loading, error, data: ADMIN_KPIS, reload } = useResource(source.stats)
 
   return (
     <div className="space-y-5">
@@ -39,6 +42,11 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {error ? <Card><ErrorState message={error} onRetry={reload} /></Card> : loading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+        </div>
+      ) : (
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
         <StatCard index={0} icon={Users}         label="Total students" value={ADMIN_KPIS.students} tone="brand" foot="+77 this year" />
         <StatCard index={1} icon={GraduationCap} label="Total faculty"  value={ADMIN_KPIS.faculty}  tone="navy"  foot="Across 9 departments" />
@@ -47,6 +55,7 @@ export default function AdminDashboard() {
         <StatCard index={4} icon={IndianRupee}   label="Fee collection" value={ADMIN_KPIS.collected} decimals={2} suffix=" Cr" tone="ok" foot="81% of demand" />
         <StatCard index={5} icon={Inbox}         label="Pending requests" value={ADMIN_KPIS.pending} tone="warn" foot="Needs action" />
       </div>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-5">
         <Card className="p-5">
