@@ -150,3 +150,52 @@ export const FEEDBACK_CRITERIA = [
   { key: 'knowledge',    label: 'Subject knowledge' },
   { key: 'organisation', label: 'Course organisation' },
 ]
+
+// ---- Documents ----
+export const DOCUMENTS = [
+  { id: 'd1', name: 'Semester V Marksheet',      cat: 'Academic',   size: '284 KB', date: '2026-08-18', verified: true,  type: 'pdf' },
+  { id: 'd2', name: 'Class XII Marksheet',       cat: 'Admission',  size: '1.2 MB', date: '2021-07-04', verified: true,  type: 'pdf' },
+  { id: 'd3', name: 'Class X Marksheet',         cat: 'Admission',  size: '1.1 MB', date: '2021-07-04', verified: true,  type: 'pdf' },
+  { id: 'd4', name: 'Admission Letter',          cat: 'Admission',  size: '156 KB', date: '2021-07-22', verified: true,  type: 'pdf' },
+  { id: 'd5', name: 'Migration Certificate',     cat: 'Admission',  size: '402 KB', date: '2021-08-02', verified: true,  type: 'pdf' },
+  { id: 'd6', name: 'Fee Receipt — Jul 2026',    cat: 'Financial',  size: '88 KB',  date: '2026-07-14', verified: true,  type: 'pdf' },
+  { id: 'd7', name: 'Fee Receipt — Aug 2026',    cat: 'Financial',  size: '88 KB',  date: '2026-08-11', verified: true,  type: 'pdf' },
+  { id: 'd8', name: 'Hostel Allotment Letter',   cat: 'Hostel',     size: '212 KB', date: '2026-06-30', verified: true,  type: 'pdf' },
+  { id: 'd9', name: 'Medical Certificate',       cat: 'Personal',   size: '640 KB', date: '2026-09-02', verified: false, type: 'jpg' },
+]
+
+// ---- Departments ----
+export const DEPARTMENTS = [
+  { id: 'dp1', code: 'CSE', name: 'Computer Science & Engineering', hod: 'Dr. Tenzing Bhutia', faculty: 48, students: 912, courses: 34, block: 'AB-II', established: 1997 },
+  { id: 'dp2', code: 'ECE', name: 'Electronics & Communication',    hod: 'Dr. Ritu Lepcha',    faculty: 41, students: 764, courses: 31, block: 'AB-III', established: 1997 },
+  { id: 'dp3', code: 'ME',  name: 'Mechanical Engineering',         hod: 'Dr. Suresh Rai',     faculty: 38, students: 702, courses: 29, block: 'AB-IV', established: 1998 },
+  { id: 'dp4', code: 'CE',  name: 'Civil Engineering',              hod: 'Dr. Pema Dorjee',    faculty: 33, students: 648, courses: 27, block: 'AB-IV', established: 2001 },
+  { id: 'dp5', code: 'EE',  name: 'Electrical & Electronics',       hod: 'Dr. Anita Sharma',   faculty: 36, students: 671, courses: 28, block: 'AB-III', established: 1999 },
+  { id: 'dp6', code: 'IT',  name: 'Information Technology',         hod: 'Dr. Karma Bhutia',   faculty: 29, students: 521, courses: 25, block: 'AB-II', established: 2004 },
+  { id: 'dp7', code: 'HSS', name: 'Humanities & Social Sciences',   hod: 'Prof. Nabin Subba',  faculty: 18, students:   0, courses: 12, block: 'AB-I', established: 1997 },
+]
+
+// ---- Access control ----
+export const PERMISSIONS = [
+  { key: 'view_own_record',    label: 'View own academic record',       student: 'full', faculty: 'full', admin: 'full' },
+  { key: 'view_any_student',   label: 'View any student record',        student: 'none', faculty: 'own',  admin: 'full' },
+  { key: 'mark_attendance',    label: 'Mark attendance',                student: 'none', faculty: 'own',  admin: 'full' },
+  { key: 'enter_marks',        label: 'Enter internal marks',           student: 'none', faculty: 'own',  admin: 'full' },
+  { key: 'publish_results',    label: 'Publish results',                student: 'none', faculty: 'none', admin: 'full' },
+  { key: 'create_assignment',  label: 'Create and grade assignments',   student: 'none', faculty: 'own',  admin: 'full' },
+  { key: 'publish_notice',     label: 'Publish notices',                student: 'none', faculty: 'full', admin: 'full' },
+  { key: 'submit_feedback',    label: 'Submit faculty feedback',        student: 'full', faculty: 'none', admin: 'none' },
+  { key: 'view_feedback',      label: 'View aggregated feedback',       student: 'none', faculty: 'own',  admin: 'full' },
+  { key: 'collect_fees',       label: 'Record fee payments',            student: 'own',  faculty: 'none', admin: 'full' },
+  { key: 'manage_users',       label: 'Create and deactivate accounts', student: 'none', faculty: 'none', admin: 'full' },
+  { key: 'export_reports',     label: 'Export institutional reports',   student: 'none', faculty: 'own',  admin: 'full' },
+]
+
+export const AUDIT_LOG = [
+  { id: 'al1', actor: 'Anil Gurung',       action: 'published Semester V results',            role: 'admin',   when: '18 Aug 2026, 14:22', severity: 'high' },
+  { id: 'al2', actor: 'Dr. Priya Rai',     action: 'graded 24 submissions for CS1601',        role: 'faculty', when: '12 Sep 2026, 11:04', severity: 'normal' },
+  { id: 'al3', actor: 'Anil Gurung',       action: 'created account 202100418',               role: 'admin',   when: '11 Sep 2026, 09:47', severity: 'high' },
+  { id: 'al4', actor: 'Prof. Sujata Chettri', action: 'marked attendance for CS1603',         role: 'faculty', when: '11 Sep 2026, 09:12', severity: 'normal' },
+  { id: 'al5', actor: 'System',            action: 'blocked 6 sign-in attempts from one IP',  role: 'system',  when: '09 Sep 2026, 02:31', severity: 'high' },
+  { id: 'al6', actor: 'Anil Gurung',       action: 'revised the academic calendar',           role: 'admin',   when: '04 Sep 2026, 16:08', severity: 'normal' },
+]

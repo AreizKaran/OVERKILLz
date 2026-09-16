@@ -1,13 +1,26 @@
-import { Card, SectionHead, Badge, ProgressRing, Bar } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, ProgressRing, Bar, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import { BarChart, Bar as RBar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts'
 import { attendanceTone } from '../../lib/hooks'
 import { useAuth } from '../../lib/auth'
-import { COURSES, ATTENDANCE_MONTHS } from '../../data/mock'
+import { ATTENDANCE_MONTHS } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
 import { AlertTriangle } from 'lucide-react'
 
 export default function Attendance() {
   const { user } = useAuth()
-  const overall = user.attendance ?? 81
+  const { loading, error, data, reload } = useResource(() => source.attendance(user.id), [user.id])
+
+  if (loading) return (
+    <div className="grid lg:grid-cols-3 gap-5">
+      <Card className="p-5 h-80 grid place-items-center"><Skeleton className="w-40 h-40 rounded-full" /></Card>
+      <Card className="p-5 lg:col-span-2 h-80"><Skeleton className="h-full w-full" /></Card>
+    </div>
+  )
+  if (error) return <Card><ErrorState message={error} onRetry={reload} /></Card>
+
+  const COURSES = data.courses
+  const overall = data.overall
   const tone = attendanceTone(overall)
   const atRisk = COURSES.filter((c) => c.attendance < 75)
 
@@ -61,8 +74,8 @@ export default function Attendance() {
         <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
           {COURSES.map((c) => {
             const t = attendanceTone(c.attendance)
-            const held = 48
-            const attended = Math.round((c.attendance / 100) * held)
+            const held = c.held ?? 0
+            const attended = c.attended ?? 0
             return (
               <div key={c.id} className="min-w-0">
                 <div className="flex items-center justify-between gap-3 mb-2">

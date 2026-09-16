@@ -11,13 +11,18 @@ server/   Express + Mongoose + JWT + bcrypt
 
 ## Running it
 
-**Frontend** (works standalone — it ships with realistic sample data):
+**Frontend.** Runs in one of two modes, decided by `VITE_API_URL`:
 
 ```bash
 cd client
 npm install
-npm run dev          # http://localhost:5173
+
+npm run dev                                    # sample-data mode, no backend needed
+VITE_API_URL=http://localhost:4000 npm run dev # live mode, talks to the API
 ```
+
+`src/data/source.js` is the only place that knows which mode is active — it
+normalises live responses to the sample-data shape, so no component branches on it.
 
 Sign in as **Student**, **Faculty** or **Administrator** — pick a role and use any
 password of 6+ characters. Each role gets a different dashboard, navigation and
@@ -32,6 +37,13 @@ cp .env.example .env        # then set JWT_SECRET
 npm run seed                # demo institute: 6 students, 3 faculty, 3 courses, 6 weeks of attendance
 npm run dev                 # http://localhost:4000
 npm test                    # authorisation + JWT tests
+```
+
+**Client tests** (Playwright, no test runner — see `client/test/README.md`):
+
+```bash
+npm run test:responsive     # needs the app on :5173
+npm run test:api            # needs VITE_API_URL set and the app on :5174
 ```
 
 ## Design system
@@ -106,6 +118,9 @@ week timetable becomes a day-by-day list.
   exam seating plan is stripped to their own seat.
 - Faculty can mark attendance and grade only for courses they are assigned to.
 - Marks entry (faculty) is separate from result publication (admin).
+- Every faculty write — attendance, assignment creation, grading, marks entry — is
+  checked against course assignment, so a lecturer cannot act on another's course.
+  The permission matrix under Access Control mirrors these server rules.
 - Feedback is structurally anonymous: responses carry no student reference, and a
   separate receipt collection enforces one-per-semester. Aggregates are withheld below
   five responses.
@@ -114,11 +129,18 @@ week timetable becomes a day-by-day list.
 
 ## What is not built
 
-- **Documents, Departments and Access Control** are routed and navigable but render a
-  placeholder — the module screens are not implemented.
-- The **frontend runs on sample data**; it is not yet wired to the API. Payloads in
-  `client/src/data/mock.js` match the server's response shapes, so switching over is a
-  change of data source rather than of components.
+- **The live API path has never run against a real server.** It is covered by tests that
+  intercept the network (credentials sent, bearer token attached, API payloads rendered,
+  401 clears the session, unreachable server degrades gracefully), but no MongoDB was
+  reachable from the machine this was built on, so the full stack is unverified end to
+  end. Expect to shake out field-name mismatches on first connection.
+- **Not every page reads through `source.js` yet.** Notices, faculty, fees, attendance
+  and assignments do. Academics, results, exams, timetable, students and the three
+  dashboards still import sample data directly, so they show sample values even in live
+  mode. The loaders they need already exist in `source.js`.
+- **Write paths are not wired.** Submitting an assignment, paying fees, marking
+  attendance and publishing a notice update local state and raise a toast; they do not
+  yet call the API, though the client methods exist.
 - File upload UI is present; **Multer wiring** for real uploads is not.
-- Tests cover authorisation and JWT handling. There are **no component or end-to-end
-  tests**; responsive and accessibility checks were run as one-off Playwright scripts.
+- No component-level unit tests. Coverage is the server's authorisation tests plus the
+  two Playwright scripts.

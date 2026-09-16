@@ -22,7 +22,9 @@ const Profile = lazy(() => import('./pages/modules/Profile'))
 const Settings = lazy(() => import('./pages/modules/Settings'))
 const Students = lazy(() => import('./pages/modules/Students'))
 const Reports = lazy(() => import('./pages/modules/Reports'))
-const Placeholder = lazy(() => import('./pages/modules/Placeholder'))
+const Documents = lazy(() => import('./pages/modules/Documents'))
+const Departments = lazy(() => import('./pages/modules/Departments'))
+const AccessControl = lazy(() => import('./pages/modules/AccessControl'))
 
 
 /** Route guard — an unauthenticated session can never reach /app. */
@@ -65,9 +67,9 @@ export default function App() {
               <Route path="students"    element={<Students />} />
               <Route path="courses"     element={<Academics />} />
               <Route path="reports"     element={<Reports />} />
-              <Route path="documents"   element={<Placeholder title="Documents" />} />
-              <Route path="departments" element={<Placeholder title="Departments" />} />
-              <Route path="access"      element={<Placeholder title="Access Control" />} />
+              <Route path="documents"   element={<Documents />} />
+              <Route path="departments" element={<Departments />} />
+              <Route path="access"      element={<AccessControl />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

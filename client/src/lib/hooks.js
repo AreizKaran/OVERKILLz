@@ -51,3 +51,25 @@ export function attendanceTone(pct) {
 }
 
 export const inr = (n) => '₹' + n.toLocaleString('en-IN')
+
+/**
+ * Loads from the data source, exposing the loading and error states the UI
+ * needs. `deps` re-runs the loader; `reload` re-runs it on demand.
+ */
+export function useResource(loader, deps = []) {
+  const [state, setState] = useState({ loading: true, error: null, data: null })
+  const [nonce, setNonce] = useState(0)
+
+  useEffect(() => {
+    let alive = true
+    setState((s) => ({ ...s, loading: true, error: null }))
+    Promise.resolve()
+      .then(loader)
+      .then((data) => { if (alive) setState({ loading: false, error: null, data }) })
+      .catch((err) => { if (alive) setState({ loading: false, error: err?.message ?? 'Could not load data', data: null }) })
+    return () => { alive = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, nonce])
+
+  return { ...state, reload: () => setNonce((n) => n + 1) }
+}

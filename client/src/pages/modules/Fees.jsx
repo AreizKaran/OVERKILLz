@@ -1,16 +1,28 @@
 import { useState } from 'react'
 import { Wallet, Download, ShieldCheck, CalendarClock, Receipt, CreditCard } from 'lucide-react'
-import { Card, SectionHead, Badge, Bar } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, Bar, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useCountUp, inr } from '../../lib/hooks'
-import { FEES } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
+import { useAuth } from '../../lib/auth'
 
 export default function Fees() {
   const toast = useToast()
+  const { user } = useAuth()
   const [pay, setPay] = useState(false)
-  const pct = Math.round((FEES.paid / FEES.total) * 100)
-  const paid = useCountUp(FEES.paid)
+  const { loading, error, data: FEES, reload } = useResource(() => source.fees(user.id), [user.id])
+  const pct = FEES ? Math.round((FEES.paid / FEES.total) * 100) : 0
+  const paid = useCountUp(FEES?.paid ?? 0)
+
+  if (loading) return (
+    <div className="grid lg:grid-cols-3 gap-5">
+      <Card className="p-6 lg:col-span-2 space-y-4"><Skeleton className="h-4 w-32" /><Skeleton className="h-9 w-64" /><Skeleton className="h-2.5 w-full" /></Card>
+      <Card className="p-6 space-y-4"><Skeleton className="h-10 w-full" /><Skeleton className="h-8 w-32" /><Skeleton className="h-11 w-full" /></Card>
+    </div>
+  )
+  if (error || !FEES) return <Card><ErrorState message={error ?? 'No fee record found.'} onRetry={reload} /></Card>
 
   return (
     <div className="space-y-5">

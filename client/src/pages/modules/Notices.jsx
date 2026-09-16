@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Megaphone, Search, Plus, Building2, CalendarDays } from 'lucide-react'
-import { Card, SectionHead, Badge, EmptyState } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, EmptyState, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { NOTICES } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
 
 const CATS = ['All', 'Academic', 'Examination', 'Administration', 'Events', 'Emergency', 'General']
 const CAT_TONE = { Emergency: 'bad', Examination: 'warn', Academic: 'info', Administration: 'info', Events: 'ok', General: 'neutral' }
@@ -17,12 +18,13 @@ export default function Notices() {
   const [open, setOpen] = useState(null)
   const [compose, setCompose] = useState(false)
   const canPublish = user.role !== 'student'
+  const { loading, error, data, reload } = useResource(source.notices)
 
-  const rows = useMemo(() => NOTICES.filter((n) => {
+  const rows = useMemo(() => (data ?? []).filter((n) => {
     const byCat = cat === 'All' || n.cat === cat
     const byQ = !q || n.title.toLowerCase().includes(q.toLowerCase())
     return byCat && byQ
-  }), [cat, q])
+  }), [data, cat, q])
 
   return (
     <div className="space-y-5">
@@ -50,7 +52,17 @@ export default function Notices() {
         </div>
       </div>
 
-      {rows.length === 0 ? (
+      {loading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="p-5 space-y-2.5">
+              <Skeleton className="h-4 w-20" /><Skeleton className="h-5 w-2/3" /><Skeleton className="h-3 w-full" />
+            </Card>
+          ))}
+        </div>
+      ) : error ? (
+        <Card><ErrorState message={error} onRetry={reload} /></Card>
+      ) : rows.length === 0 ? (
         <Card><EmptyState icon={Megaphone} title="No notices here"
           body={q ? `Nothing matches “${q}”.` : `No ${cat.toLowerCase()} notices have been published.`} /></Card>
       ) : (

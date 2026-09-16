@@ -1,21 +1,23 @@
 import { useMemo, useState } from 'react'
 import { Search, Mail, Phone, MapPin, Star, Users } from 'lucide-react'
-import { Card, SectionHead, Badge, EmptyState } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, EmptyState, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
-import { FACULTY } from '../../data/mock'
+import { source } from '../../data/source'
+import { useResource } from '../../lib/hooks'
 
 export default function Faculty() {
   const [q, setQ] = useState('')
   const [dept, setDept] = useState('All')
   const [open, setOpen] = useState(null)
-  const depts = ['All', ...new Set(FACULTY.map((f) => f.dept))]
+  const { loading, error, data, reload } = useResource(source.faculty)
+  const depts = ['All', ...new Set((data ?? []).map((f) => f.dept))]
 
-  const rows = useMemo(() => FACULTY.filter((f) => {
+  const rows = useMemo(() => (data ?? []).filter((f) => {
     const byDept = dept === 'All' || f.dept === dept
     const t = q.toLowerCase()
     const byQ = !q || f.name.toLowerCase().includes(t) || f.subjects.join(' ').toLowerCase().includes(t)
     return byDept && byQ
-  }), [q, dept])
+  }), [data, q, dept])
 
   return (
     <div className="space-y-5">
@@ -36,7 +38,19 @@ export default function Faculty() {
         </div>
       </div>
 
-      {rows.length === 0 ? (
+      {loading ? (
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="p-5 space-y-3">
+              <div className="flex gap-3"><Skeleton className="w-12 h-12 rounded-full" />
+                <div className="flex-1 space-y-2"><Skeleton className="h-4 w-2/3" /><Skeleton className="h-3 w-1/2" /></div></div>
+              <Skeleton className="h-3 w-full" /><Skeleton className="h-10 w-full" />
+            </Card>
+          ))}
+        </div>
+      ) : error ? (
+        <Card><ErrorState message={error} onRetry={reload} /></Card>
+      ) : rows.length === 0 ? (
         <Card><EmptyState icon={Users} title="No faculty found" body={`Nothing matches “${q}”.`}
           action={<button className="btn-ghost" onClick={() => { setQ(''); setDept('All') }}>Reset filters</button>} /></Card>
       ) : (

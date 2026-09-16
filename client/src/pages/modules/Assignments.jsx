@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { ClipboardList, Clock, Upload, Inbox, Search, Plus } from 'lucide-react'
-import { Card, SectionHead, Badge, EmptyState, Skeleton } from '../../components/ui/Primitives'
+import { Card, SectionHead, Badge, EmptyState, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { useAsyncData } from '../../lib/hooks'
-import { ASSIGNMENTS } from '../../data/mock'
+import { useResource } from '../../lib/hooks'
+import { source } from '../../data/source'
 
 const TONE = { pending: 'warn', submitted: 'info', graded: 'ok', overdue: 'bad', late: 'bad' }
 const TABS = ['All', 'Pending', 'Submitted', 'Graded', 'Overdue']
@@ -14,7 +14,7 @@ export default function Assignments() {
   const { user } = useAuth()
   const toast = useToast()
   const isFaculty = user.role !== 'student'
-  const { loading, data } = useAsyncData(ASSIGNMENTS, 420)
+  const { loading, error, data, reload } = useResource(source.assignments)
   const [tab, setTab] = useState('All')
   const [q, setQ] = useState('')
   const [submit, setSubmit] = useState(null)
@@ -68,6 +68,8 @@ export default function Assignments() {
             </Card>
           ))}
         </div>
+      ) : error ? (
+        <Card><ErrorState message={error} onRetry={reload} /></Card>
       ) : rows.length === 0 ? (
         <Card><EmptyState icon={Inbox} title="No assignments here"
           body={q ? `Nothing matches “${q}”.` : `You have no ${tab.toLowerCase()} assignments.`}

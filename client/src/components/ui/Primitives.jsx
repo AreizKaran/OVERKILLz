@@ -94,3 +94,17 @@ export function SkeletonCard() {
     </Card>
   )
 }
+
+/** Shown when a loader rejects — always offers a way forward (error-recovery). */
+export function ErrorState({ message, onRetry }) {
+  return (
+    <div className="text-center py-10 px-6" role="alert">
+      <div className="mx-auto w-12 h-12 rounded-xl bg-bad-50 grid place-items-center mb-3">
+        <AlertTriangle size={22} className="text-bad-700" aria-hidden="true" />
+      </div>
+      <p className="font-medium text-ink">Couldn't load this section</p>
+      <p className="text-sm text-muted mt-1 max-w-sm mx-auto">{message}</p>
+      {onRetry && <button onClick={onRetry} className="btn-ghost mt-4">Try again</button>}
+    </div>
+  )
+}

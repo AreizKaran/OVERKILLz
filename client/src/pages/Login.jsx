@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { GraduationCap, Eye, EyeOff, Loader2, Check, ShieldCheck, CalendarCheck, TrendingUp, Bell } from 'lucide-react'
 import { useAuth } from '../lib/auth'
+import { isLive } from '../lib/api'
 
 const ROLES = [
   { key: 'student', label: 'Student', hint: '202100114' },
@@ -34,9 +35,14 @@ export default function Login() {
     if (!id.trim())   return setError('Enter your registration number or employee ID.')
     if (pw.length < 6) return setError('Password must be at least 6 characters.')
     setState('loading')
-    await login(role)
-    setState('done')
-    setTimeout(() => nav('/app'), 420)
+    try {
+      await login(isLive ? id : role, pw)
+      setState('done')
+      setTimeout(() => nav('/app'), 420)
+    } catch (err) {
+      setState('idle')
+      setError(err?.message ?? 'Sign-in failed. Try again.')
+    }
   }
 
   const pickRole = (r) => {
@@ -179,7 +185,9 @@ export default function Login() {
 
           <p className="text-xs text-muted mt-6 flex items-start gap-2">
             <ShieldCheck size={14} className="mt-0.5 shrink-0 text-ok" aria-hidden="true" />
-            <span>Demo build — any password of 6+ characters signs you in as the selected role. No credentials leave this browser.</span>
+            <span>{isLive
+              ? 'Your credentials are sent over an encrypted connection to the institute server.'
+              : 'Demo build — any password of 6+ characters signs you in as the selected role. No credentials leave this browser.'}</span>
           </p>
         </motion.div>
       </div>

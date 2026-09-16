@@ -85,6 +85,13 @@ router.get('/assignments', wrap(async (req, res) => {
 }))
 
 router.post('/assignments', authorise('faculty', 'admin'), wrap(async (req, res) => {
+  // A faculty member may only set work on a course they are assigned to.
+  const owned = await Course.findOne({
+    _id: req.body.course,
+    ...(req.user.role === 'faculty' ? { faculty: req.user._id } : {}),
+  })
+  if (!owned) return res.status(403).json({ error: 'You are not assigned to this course' })
+
   const assignment = await Assignment.create({ ...req.body, faculty: req.user._id })
   res.status(201).json({ assignment })
 }))
@@ -156,6 +163,12 @@ router.get('/results/:studentId', ownRecordOnly(), wrap(async (req, res) => {
 
 router.post('/results', authorise('faculty', 'admin'), wrap(async (req, res) => {
   const { student, course, semester, internal, external, grade, credits } = req.body
+
+  // Same rule as attendance and grading: a faculty member may only enter marks
+  // for a course they are assigned to.
+  const owned = await Course.findOne({ _id: course, ...(req.user.role === 'faculty' ? { faculty: req.user._id } : {}) })
+  if (!owned) return res.status(403).json({ error: 'You are not assigned to this course' })
+
   const result = await Result.findOneAndUpdate(
     { student, course },
     { student, course, semester, internal, external, grade, credits },
