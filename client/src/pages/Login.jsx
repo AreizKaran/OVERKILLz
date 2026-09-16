@@ -176,7 +176,7 @@ export default function Login() {
             </div>
 
             <button type="submit" disabled={state !== 'idle'}
-              className={`btn w-full text-white ${state === 'done' ? 'bg-ok' : 'bg-brand hover:bg-brand-700'}`}>
+              className={`btn w-full text-white ${state === 'done' ? 'bg-ok-700' : 'bg-brand hover:bg-brand-700'}`}>
               {state === 'idle'    && 'Sign in'}
               {state === 'loading' && <><Loader2 size={16} className="animate-spin" aria-hidden="true" /> Signing in…</>}
               {state === 'done'    && <><Check size={16} aria-hidden="true" /> Signed in</>}

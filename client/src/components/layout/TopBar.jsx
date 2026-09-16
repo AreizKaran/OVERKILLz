@@ -37,7 +37,7 @@ export default function TopBar({ title, onSearch }) {
             <Bell size={18} aria-hidden="true" />
             {unread > 0 && (
               <motion.span initial={{ scale: 0.95 }} animate={{ scale: 1 }}
-                className="absolute top-1.5 right-1.5 min-w-[17px] h-[17px] px-1 rounded-full bg-accent
+                className="absolute top-1.5 right-1.5 min-w-[17px] h-[17px] px-1 rounded-full bg-accent-700
                            text-[10px] font-semibold text-white grid place-items-center tnum">
                 {unread}
               </motion.span>

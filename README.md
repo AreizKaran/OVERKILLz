@@ -56,8 +56,9 @@ connection to a live database.
 **Client tests** (Playwright, no test runner — see `client/test/README.md`):
 
 ```bash
-npm run test:responsive     # needs the app on :5173
-npm run test:api            # needs VITE_API_URL set and the app on :5174
+npm run test:responsive     # 96 checks, needs the app on :5173
+npm run test:a11y           # axe-core WCAG 2.1 AA, 26 page audits
+npm run test:api            # 24 checks, needs VITE_API_URL set and the app on :5174
 ```
 
 ## Deploying
@@ -145,6 +146,16 @@ Verified with Playwright against the breakpoints in the brief:
 - Forms use visible labels, `aria-invalid` and `role="alert"` error text tied by
   `aria-describedby`.
 - A skip link precedes the shell; the viewport meta does not disable zoom.
+- **axe-core reports no WCAG 2.1 AA violations** across 26 page audits — every route
+  for all three roles, the sign-in screen, and the mobile drawer.
+- Opening the mobile drawer makes the rest of the app `inert`, so it leaves the
+  accessibility tree and the tab order rather than just being visually dimmed.
+
+Colour choices are constrained by that audit rather than by eye. Text tokens are
+picked to clear 4.5:1 on every surface they land on, and the status colours have a
+separate darker step for use as a fill under white text — `#EF4444` reads 3.76:1
+against white, so buttons use `#DC2626` at 4.83:1, and the attendance controls use
+the 700/800 steps rather than the base hues.
 
 Mobile is a different layout, not a scaled one: bottom navigation capped at five items
 with a slide-up drawer for everything else, tables re-composed as stacked cards, and the

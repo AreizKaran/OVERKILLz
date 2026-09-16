@@ -165,9 +165,9 @@ export default function FacultyDashboard() {
               </div>
               <div className="flex gap-1 shrink-0" role="group" aria-label={`Attendance for ${s.name}`}>
                 {[
-                  { k: 'present', Icon: Check,  on: 'bg-ok text-white' },
-                  { k: 'late',    Icon: Clock3, on: 'bg-warn text-white' },
-                  { k: 'absent',  Icon: X,      on: 'bg-bad text-white' },
+                  { k: 'present', Icon: Check,  on: 'bg-ok-700 text-white' },
+                  { k: 'late',    Icon: Clock3, on: 'bg-warn-800 text-white' },
+                  { k: 'absent',  Icon: X,      on: 'bg-bad-600 text-white' },
                 ].map(({ k, Icon, on }) => (
                   <button key={k} onClick={() => setOne(s.id, k)} aria-label={k} aria-pressed={marks[s.id] === k}
                     className={`w-11 h-11 grid place-items-center rounded-lg border transition cursor-pointer

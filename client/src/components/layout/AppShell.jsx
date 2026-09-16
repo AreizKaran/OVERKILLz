@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Sidebar from './Sidebar'
@@ -30,9 +30,37 @@ export default function AppShell() {
 
   useEffect(() => { setMore(false) }, [pathname])
 
+  // The drawer is a modal surface: Escape closes it, Tab cycles inside it, and
+  // focus returns to whatever opened it. Without this, keyboard users tab
+  // straight through into the page behind.
+  const drawerRef = useRef(null)
+  const openerRef = useRef(null)
+  useEffect(() => {
+    if (!more) return
+    openerRef.current = document.activeElement
+    const onKey = (e) => {
+      if (e.key === 'Escape') { setMore(false); return }
+      if (e.key !== 'Tab' || !drawerRef.current) return
+      const f = drawerRef.current.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])')
+      if (!f.length) return
+      const first = f[0], last = f[f.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+    document.addEventListener('keydown', onKey)
+    requestAnimationFrame(() => drawerRef.current?.querySelector('a[href],button')?.focus())
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+      openerRef.current?.focus?.()
+    }
+  }, [more])
+
   return (
     <div className="min-h-dvh bg-canvas">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
+      <div {...(more ? { inert: true } : {})}>
+        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
 
       <div className={`transition-[padding] duration-300 ${collapsed ? 'lg:pl-18' : 'lg:pl-64'}`}>
         <TopBar title={current.label} onSearch={() => setSearch(true)} />
@@ -51,7 +79,9 @@ export default function AppShell() {
         </main>
       </div>
 
-      <BottomNav onMore={() => setMore(true)} />
+        <BottomNav onMore={() => setMore(true)} />
+      </div>
+
       <SearchPalette open={search} onClose={() => setSearch(false)} />
 
       {/* Secondary navigation drawer — everything not in the 5 primary slots */}
@@ -61,6 +91,7 @@ export default function AppShell() {
             <motion.div className="absolute inset-0 bg-ink/40" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               exit={{ opacity: 0 }} onClick={() => setMore(false)} aria-hidden="true" />
             <motion.div
+              ref={drawerRef} role="dialog" aria-modal="true" aria-label="All sections"
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className="absolute bottom-0 inset-x-0 bg-surface rounded-t-2xl max-h-[78vh] overflow-y-auto

@@ -31,7 +31,7 @@ export default function Attendance() {
           <AlertTriangle size={17} className="text-warn-700 mt-0.5 shrink-0" aria-hidden="true" />
           <div className="text-sm">
             <p className="font-medium text-warn-700">Attendance below the 75% requirement</p>
-            <p className="text-warn-700/80 mt-0.5">
+            <p className="text-warn-700 mt-0.5">
               {atRisk.map((c) => c.name).join(', ')} — condonation must be approved before 25 September 2026.
             </p>
           </div>

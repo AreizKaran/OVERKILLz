@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test:responsive": "node test/responsive.test.mjs",
-    "test:api": "node test/live-api.test.mjs"
+    "test:api": "node test/live-api.test.mjs",
+    "test:a11y": "node test/a11y.test.mjs"
   },
   "dependencies": {
     "framer-motion": "^13.3.0",
@@ -24,6 +25,7 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.6.1",
+    "axe-core": "^4.13.0",
     "oxlint": "^1.81.0",
     "playwright": "^1.63.0",
     "postcss": "^8.5.28",
