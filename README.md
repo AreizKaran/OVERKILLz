@@ -11,6 +11,26 @@ server/   Express + Mongoose + JWT + bcrypt
 
 ## Running it
 
+**Quickest path — one command from the repo root:**
+
+```bash
+git clone https://github.com/AreizKaran/OVERKILLz.git
+cd OVERKILLz
+npm start            # installs both halves, then serves the client
+```
+
+Then open **http://localhost:5173** and sign in as Student, Faculty or
+Administrator with any password of 6+ characters. No backend, database or `.env`
+is needed — it runs on sample data.
+
+Other root scripts: `npm run build`, `npm run preview` (production build on
+:4173), `npm run dev:full` (client and API together — needs `server/.env`),
+`npm run seed`, `npm test`, `npm run test:a11y`.
+
+Requires Node 20+.
+
+---
+
 **Frontend.** Runs in one of two modes, decided by `VITE_API_URL`:
 
 ```bash

@@ -1,0 +1,24 @@
+{
+  "name": "smit-ams",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SMIT Academic Management System — React client and Express API",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "setup": "npm --prefix client install && npm --prefix server install",
+    "start": "npm run setup && npm --prefix client run dev",
+    "dev": "npm --prefix client run dev",
+    "dev:api": "npm --prefix server run dev",
+    "dev:full": "concurrently -n client,api -c cyan,magenta \"npm --prefix client run dev\" \"npm --prefix server run dev\"",
+    "build": "npm --prefix client run build",
+    "preview": "npm --prefix client run build && npm --prefix client run preview",
+    "seed": "npm --prefix server run seed",
+    "test": "npm --prefix server test",
+    "test:a11y": "npm --prefix client run test:a11y",
+    "test:responsive": "npm --prefix client run test:responsive",
+    "test:api": "npm --prefix client run test:api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
