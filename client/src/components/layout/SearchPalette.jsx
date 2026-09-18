@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Search, CornerDownLeft } from 'lucide-react'
+import { Search, CornerDownLeft, ChevronDown } from 'lucide-react'
 import { COURSES, FACULTY, ASSIGNMENTS, NOTICES, ROSTER } from '../../data/mock'
 
 const INDEX = [
@@ -15,17 +15,21 @@ const INDEX = [
 export default function SearchPalette({ open, onClose }) {
   const [q, setQ] = useState('')
   const [active, setActive] = useState(0)
+  const [cat, setCat] = useState('All')
   const nav = useNavigate()
   const inputRef = useRef(null)
 
-  const results = useMemo(() => {
-    if (!q.trim()) return INDEX.slice(0, 6)
-    const t = q.toLowerCase()
-    return INDEX.filter((i) => i.label.toLowerCase().includes(t) || i.meta.toLowerCase().includes(t)).slice(0, 8)
-  }, [q])
+  const CATEGORIES = ['All', ...new Set(INDEX.map((i) => i.cat))]
 
-  useEffect(() => { setActive(0) }, [q])
-  useEffect(() => { if (open) { setQ(''); requestAnimationFrame(() => inputRef.current?.focus()) } }, [open])
+  const results = useMemo(() => {
+    const scope = cat === 'All' ? INDEX : INDEX.filter((i) => i.cat === cat)
+    if (!q.trim()) return scope.slice(0, 6)
+    const t = q.toLowerCase()
+    return scope.filter((i) => i.label.toLowerCase().includes(t) || i.meta.toLowerCase().includes(t)).slice(0, 8)
+  }, [q, cat])
+
+  useEffect(() => { setActive(0) }, [q, cat])
+  useEffect(() => { if (open) { setQ(''); setCat('All'); requestAnimationFrame(() => inputRef.current?.focus()) } }, [open])
 
   const go = (r) => { if (r) { nav(r.to); onClose() } }
 
@@ -52,14 +56,34 @@ export default function SearchPalette({ open, onClose }) {
             <div className="flex items-center gap-3 px-4 h-14 border-b border-line">
               <Search size={18} className="text-muted shrink-0" aria-hidden="true" />
               <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey}
-                placeholder="Search students, faculty, courses, notices…"
-                aria-label="Search" className="flex-1 bg-transparent outline-none text-sm placeholder:text-slate-400" />
+                placeholder={cat === 'All' ? 'Search students, faculty, courses, notices…' : `Search ${cat.toLowerCase()}…`}
+                aria-label="Search" className="flex-1 min-w-0 bg-transparent outline-none text-sm placeholder:text-slate-400" />
+
+              {/* Scope the search before it runs */}
+              <div className="relative shrink-0">
+                <label className="sr-only" htmlFor="search-scope">Search in</label>
+                <select id="search-scope" value={cat} onChange={(e) => setCat(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Escape') onClose() }}
+                  className="appearance-none h-9 pl-3 pr-7 rounded-lg border border-line bg-canvas
+                             text-xs font-medium text-ink cursor-pointer focus:border-brand">
+                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <ChevronDown size={13} aria-hidden="true"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+              </div>
               <kbd className="hidden sm:block text-[10px] text-muted border border-line rounded px-1.5 py-0.5">ESC</kbd>
             </div>
 
             <div className="max-h-80 overflow-y-auto py-2">
               {results.length === 0 ? (
-                <p className="text-sm text-muted text-center py-8">No results for “{q}”.</p>
+                <div className="text-center py-8 px-6">
+                  <p className="text-sm text-muted">No {cat === 'All' ? 'results' : cat.toLowerCase()} for “{q}”.</p>
+                  {cat !== 'All' && (
+                    <button onClick={() => setCat('All')} className="text-sm text-brand hover:underline mt-2 cursor-pointer">
+                      Search all categories instead
+                    </button>
+                  )}
+                </div>
               ) : Object.entries(grouped).map(([cat, rows]) => (
                 <div key={cat} className="mb-1">
                   <div className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">{cat}</div>

@@ -1,15 +1,20 @@
 import { useState } from 'react'
-import { BookOpen, User, Award, CalendarCheck, FileText, ChevronRight, Percent } from 'lucide-react'
+import { BookOpen, User, Award, CalendarCheck, FileText, ChevronRight, Percent, Download, FlaskConical } from 'lucide-react'
 import { Card, SectionHead, Badge, Bar, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
 import { attendanceTone } from '../../lib/hooks'
 import { useAuth } from '../../lib/auth'
+import { LAB_COURSES } from '../../data/mock'
+import { downloadCSV } from '../../lib/export'
+import { useToast } from '../../components/ui/Toast'
 import { source } from '../../data/source'
 import { useResource } from '../../lib/hooks'
 
 export default function Academics() {
   const { user } = useAuth()
   const [open, setOpen] = useState(null)
+  const [kind, setKind] = useState('All')   // Course List: Theory / Lab dropdown
+  const toast = useToast()
   const { loading, error, data, reload } = useResource(source.courses)
   const work = useResource(source.assignments)
 
@@ -24,17 +29,49 @@ export default function Academics() {
   )
   if (error) return <Card><ErrorState message={error} onRetry={reload} /></Card>
 
-  const COURSES = data
+  const THEORY = (data ?? []).map((c) => ({ ...c, type: c.type ?? 'Theory' }))
+  const ALL_COURSES = [...THEORY, ...LAB_COURSES]
+  const COURSES = kind === 'All' ? ALL_COURSES : ALL_COURSES.filter((c) => c.type === kind)
   const ASSIGNMENTS = work.data ?? []
+
+  const exportCourses = () => {
+    downloadCSV('courses-semester-VI', [
+      { label: 'Code', value: 'code' }, { label: 'Subject', value: 'name' },
+      { label: 'Type', value: 'type' }, { label: 'Credits', value: 'credits' },
+      { label: 'Faculty', value: 'faculty' }, { label: 'Attendance %', value: 'attendance' },
+      { label: 'Internal', value: (c) => `${c.internal}/${c.max}` },
+    ], COURSES)
+    toast('Course list exported as CSV.')
+  }
   const credits = COURSES.reduce((s, c) => s + c.credits, 0)
 
   return (
     <div className="space-y-5">
+      {/* Course List — Theory / Lab, with Show all first */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex gap-1.5" role="group" aria-label="Filter courses by type">
+          {[
+            { k: 'All',    label: `Show all (${ALL_COURSES.length})`, Icon: BookOpen },
+            { k: 'Theory', label: `Theory (${THEORY.length})`,        Icon: FileText },
+            { k: 'Lab',    label: `Lab (${LAB_COURSES.length})`,      Icon: FlaskConical },
+          ].map(({ k, label, Icon }) => (
+            <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k}
+              className={`inline-flex items-center gap-1.5 min-h-[44px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
+                ${kind === k ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+              <Icon size={14} aria-hidden="true" /> {label}
+            </button>
+          ))}
+        </div>
+        <button onClick={exportCourses} className="btn-ghost !min-h-[44px] sm:ml-auto text-sm">
+          <Download size={15} aria-hidden="true" /> Download list
+        </button>
+      </div>
+
       <Card className="p-5">
         <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
           {[
             { label: 'Semester', value: user.role === 'student' ? `VI · Autumn 2026` : 'Autumn 2026' },
-            { label: 'Registered courses', value: COURSES.length },
+            { label: kind === 'All' ? 'Registered courses' : `${kind} courses`, value: COURSES.length },
             { label: 'Total credits', value: credits },
             { label: 'Programme', value: user.program ?? 'B.Tech CSE' },
           ].map((s) => (
@@ -53,7 +90,10 @@ export default function Academics() {
             <Card key={c.id} hover className="p-5 flex flex-col">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-xs text-muted tnum">{c.code} · {c.credits} credits</div>
+                  <div className="text-xs text-muted tnum flex items-center gap-2">
+                    <span>{c.code} · {c.credits} credits</span>
+                    <Badge tone={c.type === 'Lab' ? 'warn' : 'info'} icon={false}>{c.type}</Badge>
+                  </div>
                   <h3 className="font-semibold mt-1 leading-snug">{c.name}</h3>
                 </div>
                 <span className="w-9 h-9 rounded-lg bg-brand-50 grid place-items-center shrink-0">

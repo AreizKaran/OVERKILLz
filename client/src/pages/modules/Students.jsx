@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Search, Users, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, Users, UserPlus, ChevronLeft, ChevronRight, Download, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Card, SectionHead, Badge, EmptyState, Bar } from '../../components/ui/Primitives'
 import { useToast } from '../../components/ui/Toast'
 import { attendanceTone, useResource } from '../../lib/hooks'
 import { source, isLive } from '../../data/source'
+import { downloadCSV } from '../../lib/export'
 import { useAuth } from '../../lib/auth'
 import { ROSTER } from '../../data/mock'
 
@@ -40,14 +41,53 @@ export default function Students() {
   const current = Math.min(page, pages)
   const view = isLive ? rows : rows.slice((current - 1) * PAGE, current * PAGE)
 
+  // Cohort totals, above the list rather than buried in a footer.
+  const totals = {
+    all: ALL.length,
+    healthy: ALL.filter((s) => s.att >= 80).length,
+    atRisk: ALL.filter((s) => s.att < 75).length,
+  }
+
+  const exportRoster = () => {
+    downloadCSV('student-roster-attendance-marks', [
+      { label: 'Registration', value: 'reg' }, { label: 'Name', value: 'name' },
+      { label: 'Semester', value: 'sem' }, { label: 'Department', value: 'dept' },
+      { label: 'Attendance %', value: 'att' }, { label: 'CGPA', value: 'cgpa' },
+      { label: 'Standing', value: (s) => (s.att >= 80 ? 'Healthy' : s.att >= 75 ? 'Warning' : 'Critical') },
+    ], isLive ? rows : ALL)
+    toast('Attendance and marks exported as CSV.')
+  }
+
   return (
     <div className="space-y-5">
+      {/* Total students count — the first thing on the page */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: 'Total students', value: totals.all,     Icon: Users,         tone: 'bg-brand-50 text-brand-700' },
+          { label: 'Healthy (80%+)', value: totals.healthy, Icon: CheckCircle2,  tone: 'bg-ok-50 text-ok-700' },
+          { label: 'Below 75%',      value: totals.atRisk,  Icon: AlertTriangle, tone: 'bg-bad-50 text-bad-700' },
+        ].map((s) => (
+          <Card key={s.label} className="p-4 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <span className="text-xs sm:text-sm text-muted font-medium">{s.label}</span>
+              <span className={`w-8 h-8 shrink-0 rounded-lg grid place-items-center ${s.tone}`}>
+                <s.Icon size={15} strokeWidth={2.2} aria-hidden="true" />
+              </span>
+            </div>
+            <div className="mt-1.5 text-2xl font-semibold tnum">{s.value}</div>
+          </Card>
+        ))}
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
           <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1) }} className="field pl-9"
             placeholder="Search by name or registration number" aria-label="Search students" />
         </div>
+        <button onClick={exportRoster} className="btn-ghost shrink-0 !min-h-[44px] text-sm">
+          <Download size={15} aria-hidden="true" /> <span className="hidden sm:inline">Download</span>
+        </button>
         {user.role === 'admin' && (
           <button onClick={() => toast('Student registration form opened.', 'info')} className="btn-primary shrink-0">
             <UserPlus size={16} aria-hidden="true" /> <span className="hidden sm:inline">Register student</span>

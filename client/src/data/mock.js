@@ -16,12 +16,12 @@ export const USERS = [
 ]
 
 export const COURSES = [
-  { id: 'c1', code: 'CS1601', name: 'Data Structures & Algorithms', credits: 4, faculty: 'Dr. Priya Rai', facultyId: 'f1', attendance: 82, internal: 27, max: 30, progress: 72, room: 'AB-II 201' },
-  { id: 'c2', code: 'CS1602', name: 'Computer Networks',            credits: 4, faculty: 'Dr. Tenzing Bhutia', facultyId: 'f2', attendance: 76, internal: 24, max: 30, progress: 65, room: 'AB-II 204' },
-  { id: 'c3', code: 'CS1603', name: 'Database Management Systems',  credits: 4, faculty: 'Prof. Sujata Chettri', facultyId: 'f3', attendance: 88, internal: 28, max: 30, progress: 80, room: 'AB-I 108' },
-  { id: 'c4', code: 'CS1604', name: 'Operating Systems',            credits: 3, faculty: 'Dr. Manish Pradhan', facultyId: 'f4', attendance: 79, internal: 25, max: 30, progress: 68, room: 'AB-II 110' },
-  { id: 'c5', code: 'CS1605', name: 'Software Engineering',         credits: 3, faculty: 'Dr. Priya Rai', facultyId: 'f1', attendance: 91, internal: 26, max: 30, progress: 75, room: 'AB-II 201' },
-  { id: 'c6', code: 'HS1601', name: 'Engineering Economics',        credits: 2, faculty: 'Prof. Nabin Subba', facultyId: 'f5', attendance: 69, internal: 21, max: 30, progress: 58, room: 'AB-I 002' },
+  { id: 'c1', type: 'Theory', code: 'CS1601', name: 'Data Structures & Algorithms', credits: 4, faculty: 'Dr. Priya Rai', facultyId: 'f1', attendance: 82, internal: 27, max: 30, progress: 72, room: 'AB-II 201' },
+  { id: 'c2', type: 'Theory', code: 'CS1602', name: 'Computer Networks',            credits: 4, faculty: 'Dr. Tenzing Bhutia', facultyId: 'f2', attendance: 76, internal: 24, max: 30, progress: 65, room: 'AB-II 204' },
+  { id: 'c3', type: 'Theory', code: 'CS1603', name: 'Database Management Systems',  credits: 4, faculty: 'Prof. Sujata Chettri', facultyId: 'f3', attendance: 88, internal: 28, max: 30, progress: 80, room: 'AB-I 108' },
+  { id: 'c4', type: 'Theory', code: 'CS1604', name: 'Operating Systems',            credits: 3, faculty: 'Dr. Manish Pradhan', facultyId: 'f4', attendance: 79, internal: 25, max: 30, progress: 68, room: 'AB-II 110' },
+  { id: 'c5', type: 'Theory', code: 'CS1605', name: 'Software Engineering',         credits: 3, faculty: 'Dr. Priya Rai', facultyId: 'f1', attendance: 91, internal: 26, max: 30, progress: 75, room: 'AB-II 201' },
+  { id: 'c6', type: 'Theory', code: 'HS1601', name: 'Engineering Economics',        credits: 2, faculty: 'Prof. Nabin Subba', facultyId: 'f5', attendance: 69, internal: 21, max: 30, progress: 58, room: 'AB-I 002' },
 ]
 
 export const FACULTY = [
@@ -114,12 +114,18 @@ export const FACULTY_CLASSES = [
   { id: 'fc1', course: 'CS1601', name: 'Data Structures & Algorithms', time: '09:00 – 10:00', room: 'AB-II 201', students: 62, marked: true  },
   { id: 'fc2', course: 'CS1605', name: 'Software Engineering',         time: '14:00 – 15:00', room: 'AB-II 201', students: 58, marked: false },
 ]
-export const ROSTER = [
-  { id: 's1', reg: '202100114', name: 'Aditya Sharma',     att: 82 }, { id: 's2', reg: '202100118', name: 'Bhavya Rai',        att: 91 },
-  { id: 's3', reg: '202100121', name: 'Chirag Tamang',     att: 68 }, { id: 's4', reg: '202100126', name: 'Deepika Subba',     att: 88 },
-  { id: 's5', reg: '202100130', name: 'Eshan Pradhan',     att: 74 }, { id: 's6', reg: '202100134', name: 'Farhan Ali',        att: 95 },
-  { id: 's7', reg: '202100139', name: 'Gauri Sharma',      att: 79 }, { id: 's8', reg: '202100142', name: 'Hemant Chettri',    att: 61 },
-]
+const FIRST = ['Aditya','Bhavya','Chirag','Deepika','Eshan','Farhan','Gauri','Hemant','Ishita','Jigme',
+  'Karma','Lhamu','Manish','Nima','Ongdi','Pema','Rinzing','Sangay','Tashi','Ugyen','Yangchen','Zomba',
+  'Ankit','Bipul','Chandan','Diksha','Ekta','Gopal','Himal','Indra']
+const LAST = ['Sharma','Rai','Tamang','Subba','Pradhan','Ali','Chettri','Bhutia','Lepcha','Gurung','Limbu','Thapa']
+
+/** 62 students — the class size the faculty dashboard reports. */
+export const ROSTER = Array.from({ length: 62 }, (_, i) => ({
+  id: `s${i + 1}`,
+  reg: String(202100114 + i * 3),
+  name: `${FIRST[i % FIRST.length]} ${LAST[(i * 5) % LAST.length]}`,
+  att: Math.max(58, Math.min(97, 62 + ((i * 17) % 36))),
+}))
 
 // ---- Admin-side ----
 export const ADMIN_KPIS = { students: 4218, faculty: 286, courses: 174, attendance: 81.4, collected: 6.42, pending: 37 }
@@ -199,3 +205,32 @@ export const AUDIT_LOG = [
   { id: 'al5', actor: 'System',            action: 'blocked 6 sign-in attempts from one IP',  role: 'system',  when: '09 Sep 2026, 02:31', severity: 'high' },
   { id: 'al6', actor: 'Anil Gurung',       action: 'revised the academic calendar',           role: 'admin',   when: '04 Sep 2026, 16:08', severity: 'normal' },
 ]
+
+// Lab courses run alongside the theory papers and are filtered separately (§Course List).
+export const LAB_COURSES = [
+  { id: 'l1', type: 'Lab', code: 'CS1691', name: 'Data Structures Laboratory',  credits: 2, faculty: 'Dr. Priya Rai',        facultyId: 'f1', attendance: 86, internal: 18, max: 20, progress: 74, room: 'Lab 3' },
+  { id: 'l2', type: 'Lab', code: 'CS1692', name: 'Networks Laboratory',         credits: 2, faculty: 'Dr. Tenzing Bhutia',   facultyId: 'f2', attendance: 80, internal: 16, max: 20, progress: 66, room: 'Lab 2' },
+  { id: 'l3', type: 'Lab', code: 'CS1693', name: 'DBMS Laboratory',             credits: 2, faculty: 'Prof. Sujata Chettri', facultyId: 'f3', attendance: 92, internal: 19, max: 20, progress: 81, room: 'Lab 1' },
+  { id: 'l4', type: 'Lab', code: 'CS1694', name: 'Operating Systems Laboratory',credits: 1, faculty: 'Dr. Manish Pradhan',   facultyId: 'f4', attendance: 77, internal: 15, max: 20, progress: 62, room: 'Lab 4' },
+]
+
+/** Per-subject feedback: a student rates each registered subject, not just the teacher. */
+export const SUBJECT_FEEDBACK_CRITERIA = [
+  { key: 'content',   label: 'Syllabus coverage' },
+  { key: 'pace',      label: 'Pace of delivery' },
+  { key: 'material',  label: 'Quality of study material' },
+  { key: 'relevance', label: 'Practical relevance' },
+]
+
+/** Aggregated subject feedback the faculty and admin views read. */
+export const SUBJECT_FEEDBACK = [
+  { code: 'CS1601', name: 'Data Structures & Algorithms', responses: 58, content: 4.5, pace: 4.1, material: 4.4, relevance: 4.7 },
+  { code: 'CS1602', name: 'Computer Networks',            responses: 54, content: 4.2, pace: 3.8, material: 4.0, relevance: 4.3 },
+  { code: 'CS1603', name: 'Database Management Systems',  responses: 60, content: 4.7, pace: 4.5, material: 4.6, relevance: 4.8 },
+  { code: 'CS1604', name: 'Operating Systems',            responses: 51, content: 4.0, pace: 3.6, material: 3.9, relevance: 4.1 },
+  { code: 'CS1605', name: 'Software Engineering',         responses: 49, content: 4.4, pace: 4.2, material: 4.3, relevance: 4.6 },
+  { code: 'HS1601', name: 'Engineering Economics',        responses: 44, content: 3.8, pace: 3.9, material: 3.7, relevance: 3.5 },
+]
+
+/** Cohort totals shown above the roster (§Total students count). */
+export const COHORT = { total: 62, present: 54, departments: 1, sections: 2, semester: 'VI' }

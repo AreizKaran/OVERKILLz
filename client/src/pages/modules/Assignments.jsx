@@ -1,14 +1,57 @@
 import { useMemo, useState } from 'react'
-import { ClipboardList, Clock, Upload, Inbox, Search, Plus } from 'lucide-react'
+import { ClipboardList, Clock, Upload, Inbox, Search, Plus, Rows3, LayoutList, Download } from 'lucide-react'
 import { Card, SectionHead, Badge, EmptyState, ErrorState, Skeleton } from '../../components/ui/Primitives'
 import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
 import { useResource, useMutation } from '../../lib/hooks'
 import { source, mutate } from '../../data/source'
+import { downloadCSV } from '../../lib/export'
 
 const TONE = { pending: 'warn', submitted: 'info', graded: 'ok', overdue: 'bad', late: 'bad' }
 const TABS = ['All', 'Pending', 'Submitted', 'Graded', 'Overdue']
+
+/** One assignment. Rendered by both the grouped and the flat layout. */
+function AssignmentCard({ a, isFaculty, onSubmit }) {
+  const overdue = a.status === 'overdue'
+  return (
+    <Card hover className="p-5 flex flex-col h-full">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-semibold leading-snug">{a.title}</h3>
+        <Badge tone={TONE[a.status]}>{a.status}</Badge>
+      </div>
+      <p className="text-sm text-muted mt-1.5 truncate">{a.courseName}</p>
+      <p className="text-xs text-muted mt-0.5">{a.faculty}</p>
+
+      <div className={`flex items-center gap-1.5 text-xs mt-3 ${overdue ? 'text-bad-700 font-medium' : 'text-muted'}`}>
+        <Clock size={12} aria-hidden="true" />
+        Due {new Date(a.due).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+      </div>
+
+      {isFaculty ? (
+        <div className="mt-auto pt-4 border-t border-line flex items-center justify-between">
+          <span className="text-sm tnum"><strong>{a.submitted}</strong><span className="text-muted">/{a.total} submitted</span></span>
+          <button className="text-sm text-brand hover:underline cursor-pointer">Evaluate</button>
+        </div>
+      ) : (
+        <div className="mt-auto pt-4 border-t border-line flex items-center justify-between gap-2">
+          <span className="text-sm">
+            {a.grade != null
+              ? <><span className="text-muted">Grade </span><strong className="tnum">{a.grade}/{a.max}</strong></>
+              : <span className="text-muted tnum">Max {a.max} marks</span>}
+          </span>
+          {(a.status === 'pending' || a.status === 'overdue') && (
+            <button onClick={() => onSubmit(a)} className="btn-primary !min-h-[38px] !px-3 text-xs">
+              <Upload size={13} aria-hidden="true" /> Submit
+            </button>
+          )}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+
 
 export default function Assignments() {
   const { user } = useAuth()
@@ -19,6 +62,7 @@ export default function Assignments() {
   const [q, setQ] = useState('')
   const [submit, setSubmit] = useState(null)
   const [create, setCreate] = useState(false)
+  const [grouped, setGrouped] = useState(true)   // subject-wise by default
 
   const rows = useMemo(() => {
     if (!data) return []
@@ -36,6 +80,27 @@ export default function Assignments() {
 
   const createWork = useMutation((payload) => mutate.createAssignment(payload),
     { onSuccess: () => { toast('Assignment published.'); reload() }, onError: (m) => toast(m, 'error') })
+
+  // Subject-wise grouping (§Subject wise - Assignment)
+  const bySubject = useMemo(() => {
+    const map = new Map()
+    for (const a of rows) {
+      const key = a.course ?? '—'
+      if (!map.has(key)) map.set(key, { code: key, name: a.courseName, items: [] })
+      map.get(key).items.push(a)
+    }
+    return [...map.values()].sort((a, b) => a.code.localeCompare(b.code))
+  }, [rows])
+
+  const exportMarks = () => {
+    downloadCSV('assignment-marks', [
+      { label: 'Subject Code', value: 'course' }, { label: 'Subject', value: 'courseName' },
+      { label: 'Assignment', value: 'title' }, { label: 'Due', value: (a) => String(a.due).slice(0, 10) },
+      { label: 'Status', value: 'status' },
+      { label: 'Marks', value: (a) => (a.grade != null ? `${a.grade}/${a.max}` : '—') },
+    ], rows)
+    toast('Assignment marks exported as CSV.')
+  }
 
   const doSubmit = async () => { const a = submit; setSubmit(null); await submitWork.run(a) }
 
@@ -60,6 +125,14 @@ export default function Assignments() {
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search assignments"
               aria-label="Search assignments" className="field pl-9" />
           </div>
+          <button onClick={() => setGrouped((g) => !g)} aria-pressed={grouped}
+            className="btn-ghost shrink-0 !min-h-[44px] !px-3 text-sm" title="Toggle subject grouping">
+            {grouped ? <Rows3 size={15} aria-hidden="true" /> : <LayoutList size={15} aria-hidden="true" />}
+            <span className="hidden md:inline">{grouped ? 'By subject' : 'Flat list'}</span>
+          </button>
+          <button onClick={exportMarks} className="btn-ghost shrink-0 !min-h-[44px] !px-3 text-sm">
+            <Download size={15} aria-hidden="true" /> <span className="hidden md:inline">Marks</span>
+          </button>
           {isFaculty && (
             <button onClick={() => setCreate(true)} className="btn-primary shrink-0">
               <Plus size={16} aria-hidden="true" /> <span className="hidden sm:inline">Create</span>
@@ -83,46 +156,27 @@ export default function Assignments() {
           body={q ? `Nothing matches “${q}”.` : `You have no ${tab.toLowerCase()} assignments.`}
           action={q ? <button className="btn-ghost" onClick={() => setQ('')}>Clear search</button> : null} /></Card>
       ) : (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {rows.map((a) => {
-            const overdue = a.status === 'overdue'
-            return (
-              <Card key={a.id} hover className="p-5 flex flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-semibold leading-snug">{a.title}</h3>
-                  <Badge tone={TONE[a.status]}>{a.status}</Badge>
-                </div>
-                <p className="text-sm text-muted mt-1.5 truncate">{a.courseName}</p>
-                <p className="text-xs text-muted mt-0.5">{a.faculty}</p>
-
-                <div className={`flex items-center gap-1.5 text-xs mt-3 ${overdue ? 'text-bad-700 font-medium' : 'text-muted'}`}>
-                  <Clock size={12} aria-hidden="true" />
-                  Due {new Date(a.due).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </div>
-
-                {isFaculty ? (
-                  <div className="mt-4 pt-4 border-t border-line flex items-center justify-between">
-                    <span className="text-sm tnum"><strong>{a.submitted}</strong><span className="text-muted">/{a.total} submitted</span></span>
-                    <button className="text-sm text-brand hover:underline cursor-pointer">Evaluate</button>
-                  </div>
-                ) : (
-                  <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-2">
-                    <span className="text-sm">
-                      {a.grade != null
-                        ? <><span className="text-muted">Grade </span><strong className="tnum">{a.grade}/{a.max}</strong></>
-                        : <span className="text-muted tnum">Max {a.max} marks</span>}
-                    </span>
-                    {(a.status === 'pending' || a.status === 'overdue') && (
-                      <button onClick={() => setSubmit(a)} className="btn-primary !min-h-[38px] !px-3 text-xs">
-                        <Upload size={13} aria-hidden="true" /> Submit
-                      </button>
-                    )}
-                  </div>
-                )}
-              </Card>
-            )
-          })}
+        grouped ? (
+        <div className="space-y-6">
+          {bySubject.map((g) => (
+            <section key={g.code}>
+              <div className="flex items-center gap-2.5 mb-3">
+                <h2 className="text-sm font-semibold text-ink">{g.name}</h2>
+                <span className="text-xs text-muted tnum">{g.code}</span>
+                <span className="chip bg-subtle text-muted">{g.items.length}</span>
+                <span className="flex-1 h-px bg-line" aria-hidden="true" />
+              </div>
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {g.items.map((a) => <AssignmentCard key={a.id} a={a} isFaculty={isFaculty} onSubmit={setSubmit} />)}
+              </div>
+            </section>
+          ))}
         </div>
+        ) : (
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {rows.map((a) => <AssignmentCard key={a.id} a={a} isFaculty={isFaculty} onSubmit={setSubmit} />)}
+        </div>
+        )
       )}
 
       <Modal open={!!submit} onClose={() => setSubmit(null)} title="Submit assignment"

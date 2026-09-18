@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Star, ShieldCheck, Check } from 'lucide-react'
+import { Star, ShieldCheck, Check, BookOpen, UserRound, Download } from 'lucide-react'
 import { BarChart, Bar as RBar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Card, SectionHead, Badge, EmptyState } from '../../components/ui/Primitives'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
-import { FEEDBACK_CRITERIA } from '../../data/mock'
+import { FEEDBACK_CRITERIA, SUBJECT_FEEDBACK_CRITERIA, SUBJECT_FEEDBACK } from '../../data/mock'
+import { downloadCSV } from '../../lib/export'
 import { source, mutate } from '../../data/source'
 import { useResource, useMutation } from '../../lib/hooks'
 
@@ -33,6 +34,7 @@ export default function Feedback() {
   const [selected, setSelected] = useState(null)
   const [scores, setScores] = useState({})
   const [done, setDone] = useState([])
+  const [mode, setMode] = useState('faculty')   // faculty | subject
   const { data: facultyList } = useResource(source.faculty)
   const FACULTY = facultyList ?? []
 
@@ -47,6 +49,80 @@ export default function Feedback() {
             individual responses and student identities are never exposed.
           </p>
         </div>
+
+        <Card className="p-5">
+          <SectionHead title="Per-subject feedback" sub="Every registered subject, rated separately from its teacher"
+            action={
+              <button onClick={() => { downloadCSV('subject-feedback', [
+                  { label: 'Code', value: 'code' }, { label: 'Subject', value: 'name' },
+                  { label: 'Responses', value: 'responses' },
+                  ...SUBJECT_FEEDBACK_CRITERIA.map((c) => ({ label: c.label, value: c.key })),
+                  { label: 'Average', value: (r) => (SUBJECT_FEEDBACK_CRITERIA.reduce((a, c) => a + r[c.key], 0) / 4).toFixed(2) },
+                ], SUBJECT_FEEDBACK); toast('Subject feedback exported as CSV.') }}
+                className="btn-ghost !min-h-[40px] text-xs">
+                <Download size={14} aria-hidden="true" /> Export
+              </button>}
+          />
+          <div className="hidden md:block overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-muted border-b border-line">
+                  <th scope="col" className="font-medium py-2.5 pr-4">Subject</th>
+                  {SUBJECT_FEEDBACK_CRITERIA.map((c) => (
+                    <th key={c.key} scope="col" className="font-medium py-2.5 pr-4">{c.label}</th>
+                  ))}
+                  <th scope="col" className="font-medium py-2.5 pr-4">Average</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SUBJECT_FEEDBACK.map((r) => {
+                  const avg = SUBJECT_FEEDBACK_CRITERIA.reduce((a, c) => a + r[c.key], 0) / 4
+                  return (
+                    <tr key={r.code} className="border-b border-line last:border-0 hover:bg-subtle/50">
+                      <td className="py-3 pr-4">
+                        <div className="font-medium">{r.name}</div>
+                        <div className="text-xs text-muted tnum">{r.code} · {r.responses} responses</div>
+                      </td>
+                      {SUBJECT_FEEDBACK_CRITERIA.map((c) => (
+                        <td key={c.key} className="py-3 pr-4 tnum">{r[c.key].toFixed(1)}</td>
+                      ))}
+                      <td className="py-3 pr-4">
+                        <Badge tone={avg >= 4.3 ? 'ok' : avg >= 3.8 ? 'warn' : 'bad'} icon={false}>
+                          {avg.toFixed(2)}
+                        </Badge>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="md:hidden space-y-3">
+            {SUBJECT_FEEDBACK.map((r) => {
+              const avg = SUBJECT_FEEDBACK_CRITERIA.reduce((a, c) => a + r[c.key], 0) / 4
+              return (
+                <div key={r.code} className="p-4 rounded-xl border border-line">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-medium leading-snug">{r.name}</div>
+                      <div className="text-xs text-muted tnum mt-0.5">{r.code} · {r.responses} responses</div>
+                    </div>
+                    <Badge tone={avg >= 4.3 ? 'ok' : avg >= 3.8 ? 'warn' : 'bad'} icon={false}>{avg.toFixed(2)}</Badge>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-2 mt-3">
+                    {SUBJECT_FEEDBACK_CRITERIA.map((c) => (
+                      <div key={c.key} className="bg-subtle rounded-lg px-2.5 py-2">
+                        <dt className="text-[11px] text-muted leading-tight">{c.label}</dt>
+                        <dd className="tnum font-semibold text-sm mt-0.5">{r[c.key].toFixed(1)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )
+            })}
+          </div>
+        </Card>
 
         <div className="grid lg:grid-cols-2 gap-5">
           <Card className="p-5">
@@ -98,11 +174,12 @@ export default function Feedback() {
 
   const submit = async () => {
     const f = selected
-    const ok = await sending.run({ faculty: f.id, semester: 6, scores })
+    const ok = await sending.run({ [mode === 'subject' ? 'course' : 'faculty']: f.id, semester: 6, scores })
     if (ok) { setDone((d) => [...d, f.id]); setSelected(null); setScores({}) }
   }
 
-  const complete = FEEDBACK_CRITERIA.every((c) => scores[c.key])
+  const criteria = mode === 'subject' ? SUBJECT_FEEDBACK_CRITERIA : FEEDBACK_CRITERIA
+  const complete = criteria.every((c) => scores[c.key])
 
   return (
     <div className="space-y-5">
@@ -113,11 +190,27 @@ export default function Feedback() {
         </p>
       </div>
 
+      {/* Faculty or subject — two different things students are asked about */}
+      <div className="flex gap-1.5" role="group" aria-label="Feedback type">
+        {[
+          { k: 'faculty', label: 'Faculty feedback', Icon: UserRound },
+          { k: 'subject', label: 'Subject feedback', Icon: BookOpen },
+        ].map(({ k, label, Icon }) => (
+          <button key={k} onClick={() => { setMode(k); setSelected(null); setScores({}) }} aria-pressed={mode === k}
+            className={`inline-flex items-center gap-1.5 min-h-[44px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
+              ${mode === k ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+            <Icon size={15} aria-hidden="true" /> {label}
+          </button>
+        ))}
+      </div>
+
       {selected ? (
         <Card className="p-5 max-w-2xl">
-          <SectionHead title={selected.name} sub={`${selected.designation} · ${selected.subjects[0]}`} />
+          <SectionHead title={selected.name}
+            sub={mode === 'subject' ? `${selected.code} · rate the subject, not the teacher`
+                                    : `${selected.designation} · ${selected.subjects?.[0] ?? ''}`} />
           <div className="mt-2">
-            {FEEDBACK_CRITERIA.map((c) => (
+            {(mode === 'subject' ? SUBJECT_FEEDBACK_CRITERIA : FEEDBACK_CRITERIA).map((c) => (
               <Rating key={c.key} label={c.label} value={scores[c.key] ?? 0}
                 onChange={(n) => setScores((s) => ({ ...s, [c.key]: n }))} />
             ))}
@@ -130,26 +223,34 @@ export default function Feedback() {
           <div className="flex gap-2 mt-5">
             <button className="btn-ghost flex-1" onClick={() => { setSelected(null); setScores({}) }}>Cancel</button>
             <button className="btn-primary flex-1" disabled={!complete || sending.pending} onClick={submit}>
-              {sending.pending ? 'Submitting…' : complete ? 'Submit feedback' : `Rate all ${FEEDBACK_CRITERIA.length} criteria`}
+              {sending.pending ? 'Submitting…' : complete ? 'Submit feedback' : `Rate all ${criteria.length} criteria`}
             </button>
           </div>
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {FACULTY.slice(0, 5).map((f) => {
+          {(mode === 'subject'
+            ? SUBJECT_FEEDBACK.map((x) => ({ id: x.code, code: x.code, name: x.name, designation: `${x.responses} responses`, subjects: [] }))
+            : FACULTY.slice(0, 5)
+          ).map((f) => {
             const submitted = done.includes(f.id)
             return (
               <Card key={f.id} hover={!submitted} className="p-5">
                 <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-full bg-navy text-white grid place-items-center text-sm font-semibold shrink-0">
-                    {f.name.replace(/^(Dr|Prof)\.\s*/, '').split(' ').map((p) => p[0]).slice(0, 2).join('')}
+                  <div className={`w-11 h-11 grid place-items-center text-white text-xs font-semibold shrink-0
+                    ${mode === 'subject' ? 'rounded-xl bg-brand tnum' : 'rounded-full bg-navy text-sm'}`}>
+                    {mode === 'subject'
+                      ? f.code.slice(-4)
+                      : f.name.replace(/^(Dr|Prof)\.\s*/, '').split(' ').map((p) => p[0]).slice(0, 2).join('')}
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-semibold text-sm leading-snug truncate">{f.name}</h3>
                     <p className="text-xs text-muted truncate">{f.designation}</p>
                   </div>
                 </div>
-                <p className="text-xs text-muted mt-3 line-clamp-2">{f.subjects.join(' · ')}</p>
+                <p className="text-xs text-muted mt-3 line-clamp-2">
+                  {mode === 'subject' ? 'Rate coverage, pace, material and relevance' : f.subjects.join(' · ')}
+                </p>
                 {submitted ? (
                   <div className="mt-4"><Badge tone="ok">Feedback submitted</Badge></div>
                 ) : (

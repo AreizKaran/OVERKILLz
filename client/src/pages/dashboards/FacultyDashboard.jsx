@@ -8,6 +8,7 @@ import Modal from '../../components/ui/Modal'
 import { useToast } from '../../components/ui/Toast'
 import { useAuth } from '../../lib/auth'
 import { FACULTY_CLASSES, ROSTER } from '../../data/mock'
+import AttendanceRegister from '../../components/AttendanceRegister'
 import { mutate } from '../../data/source'
 import { useMutation } from '../../lib/hooks'
 
@@ -137,48 +138,18 @@ export default function FacultyDashboard() {
         </div>
       </div>
 
-      {/* Minimal-click attendance marking (§12) */}
+      {/* Full register: any date, checkboxes, bulk actions, CSV export */}
       <Modal open={!!marking} onClose={() => setMarking(null)} size="lg"
-        title={marking ? `${marking.course} · ${marking.name}` : ''}
-        footer={
-          <>
-            <button className="btn-ghost" onClick={() => setMarking(null)}>Cancel</button>
-            <button className="btn-primary" onClick={save} disabled={saving.pending}>
-              {saving.pending ? 'Saving…' : 'Save attendance'}</button>
-          </>
-        }>
-        <div className="flex items-center justify-between mb-4 text-sm">
-          <div className="flex gap-2 flex-wrap">
-            <Badge tone="ok">{counts.present ?? 0} present</Badge>
-            <Badge tone="bad">{counts.absent ?? 0} absent</Badge>
-            <Badge tone="warn">{counts.late ?? 0} late</Badge>
-          </div>
-          <button onClick={() => setMarks(Object.fromEntries(ROSTER.map((s) => [s.id, 'present'])))}
-            className="text-brand hover:underline text-sm cursor-pointer">Mark all present</button>
-        </div>
-        <div className="space-y-1.5">
-          {ROSTER.map((s) => (
-            <div key={s.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-subtle/60">
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium truncate">{s.name}</div>
-                <div className="text-xs text-muted tnum">{s.reg} · {s.att}% overall</div>
-              </div>
-              <div className="flex gap-1 shrink-0" role="group" aria-label={`Attendance for ${s.name}`}>
-                {[
-                  { k: 'present', Icon: Check,  on: 'bg-ok-700 text-white' },
-                  { k: 'late',    Icon: Clock3, on: 'bg-warn-800 text-white' },
-                  { k: 'absent',  Icon: X,      on: 'bg-bad-600 text-white' },
-                ].map(({ k, Icon, on }) => (
-                  <button key={k} onClick={() => setOne(s.id, k)} aria-label={k} aria-pressed={marks[s.id] === k}
-                    className={`w-11 h-11 grid place-items-center rounded-lg border transition cursor-pointer
-                      ${marks[s.id] === k ? on + ' border-transparent' : 'border-line text-muted hover:bg-subtle'}`}>
-                    <Icon size={15} aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        title={marking ? `${marking.course} · ${marking.name}` : ''}>
+        {marking && (
+          <AttendanceRegister
+            course={marking}
+            onSave={({ date, marks }) => {
+              setMarking(null)
+              saving.run({ course: marking.courseId ?? marking.course, date, records: marks })
+            }}
+          />
+        )}
       </Modal>
     </div>
   )
