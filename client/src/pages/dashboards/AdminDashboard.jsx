@@ -48,11 +48,11 @@ export default function AdminDashboard() {
         </div>
       ) : (
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-        <StatCard index={0} icon={Users}         label="Total students" value={ADMIN_KPIS.students} tone="brand" foot="+77 this year" />
-        <StatCard index={1} icon={GraduationCap} label="Total faculty"  value={ADMIN_KPIS.faculty}  tone="violet"  foot="Across 9 departments" />
-        <StatCard index={2} icon={BookOpen}      label="Active courses" value={ADMIN_KPIS.courses}  tone="accent" foot="Autumn 2026" />
+        <StatCard index={0} icon={Users}         label="Total students" value={ADMIN_KPIS.students} tone="neutral" foot="+77 this year" />
+        <StatCard index={1} icon={GraduationCap} label="Total faculty"  value={ADMIN_KPIS.faculty}  tone="neutral"  foot="Across 9 departments" />
+        <StatCard index={2} icon={BookOpen}      label="Active courses" value={ADMIN_KPIS.courses}  tone="neutral" foot="Autumn 2026" />
         <StatCard index={3} icon={CalendarCheck} label="Attendance rate" value={ADMIN_KPIS.attendance} decimals={1} suffix="%" tone="ok" foot="Institute average" />
-        <StatCard index={4} icon={IndianRupee}   label="Fee collection" value={ADMIN_KPIS.collected} decimals={2} suffix=" Cr" tone="navy" foot="81% of demand" />
+        <StatCard index={4} icon={IndianRupee}   label="Fee collection" value={ADMIN_KPIS.collected} decimals={2} suffix=" Cr" tone="neutral" foot="81% of demand" />
         <StatCard index={5} icon={Inbox}         label="Pending requests" value={ADMIN_KPIS.pending} tone="warn" foot="Needs action" />
       </div>
       )}
@@ -65,15 +65,15 @@ export default function AdminDashboard() {
               <AreaChart data={ENROLMENT_TREND} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
                 <defs>
                   <linearGradient id="g-enrol" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#312E81" stopOpacity={0.2} />
-                    <stop offset="100%" stopColor="#312E81" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#1A1714" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#1A1714" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
-                <YAxis domain={[3200, 4400]} ticks={[3200, 3600, 4000, 4400]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={50} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+                <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
+                <YAxis domain={[3200, 4400]} ticks={[3200, 3600, 4000, 4400]} tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <Area type="monotone" dataKey="students" name="Students" stroke="#312E81" strokeWidth={2.5} fill="url(#g-enrol)" />
+                <Area type="monotone" dataKey="students" name="Students" stroke="#1A1714" strokeWidth={2.5} fill="url(#g-enrol)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -84,13 +84,13 @@ export default function AdminDashboard() {
           <div className="h-64 -ml-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={DEPT_ATTENDANCE} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={44} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+                <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={44} />
                 <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
                 <RBar dataKey="pct" name="Attendance %" radius={[5, 5, 0, 0]} maxBarSize={48}>
                   {DEPT_ATTENDANCE.map((d) => (
-                    <Cell key={d.dept} fill={d.pct >= 80 ? '#10B981' : d.pct >= 75 ? '#F59E0B' : '#EF4444'} />
+                    <Cell key={d.dept} fill={d.pct >= 80 ? '#1F6B4A' : d.pct >= 75 ? '#8A5A12' : '#A3241C'} />
                   ))}
                 </RBar>
               </BarChart>

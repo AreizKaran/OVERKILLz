@@ -138,9 +138,9 @@ export const DEPT_ATTENDANCE = [
   { dept: 'CE',  pct: 81 }, { dept: 'EE',  pct: 78 }, { dept: 'IT',  pct: 85 },
 ]
 export const FEE_SPLIT = [
-  { name: 'Collected', value: 642, fill: '#10B981' },
-  { name: 'Pending',   value: 148, fill: '#F59E0B' },
-  { name: 'Overdue',   value:  43, fill: '#EF4444' },
+  { name: 'Collected', value: 642, fill: '#1F6B4A' },
+  { name: 'Pending',   value: 148, fill: '#8A5A12' },
+  { name: 'Overdue',   value:  43, fill: '#A3241C' },
 ]
 export const ACTIVITY = [
   { id: 'v1', who: 'Dr. Priya Rai',        what: 'marked attendance for CS1601',          when: '12 min ago',  type: 'attendance' },

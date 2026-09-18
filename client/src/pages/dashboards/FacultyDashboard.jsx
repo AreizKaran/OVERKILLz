@@ -54,9 +54,9 @@ export default function FacultyDashboard() {
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-        <StatCard index={0} icon={BookOpen}       label="Assigned courses"   value={2}   tone="brand" foot="Autumn 2026" />
+        <StatCard index={0} icon={BookOpen}       label="Assigned courses"   value={2}   tone="neutral" foot="Autumn 2026" />
         <StatCard index={1} icon={Users}          label="Total students"     value={120} tone="navy"  foot="Across both sections" />
-        <StatCard index={2} icon={CalendarClock}  label="Today's classes"    value={2}   tone="accent" foot="1 attendance pending" />
+        <StatCard index={2} icon={CalendarClock}  label="Today's classes"    value={2}   tone="neutral" foot="1 attendance pending" />
         <StatCard index={3} icon={ClipboardCheck} label="Pending evaluations" value={38} tone="warn"  foot="AVL Tree submissions" />
       </div>
 
@@ -89,11 +89,11 @@ export default function FacultyDashboard() {
           <div className="h-56 -ml-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={GRADE_SPREAD} margin={{ top: 4, right: 8, bottom: 0, left: -16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                <XAxis dataKey="band" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} interval={0} />
-                <YAxis tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={40} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+                <XAxis dataKey="band" tick={{ fontSize: 11, fill: '#5A5248' }} axisLine={false} tickLine={false} interval={0} />
+                <YAxis tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={40} />
                 <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <RBar dataKey="n" name="Students" fill="#4F46E5" radius={[5, 5, 0, 0]} maxBarSize={44} />
+                <RBar dataKey="n" name="Students" fill="#9E1B32" radius={[5, 5, 0, 0]} maxBarSize={44} />
               </BarChart>
             </ResponsiveContainer>
           </div>

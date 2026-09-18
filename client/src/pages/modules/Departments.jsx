@@ -43,12 +43,12 @@ export default function Departments() {
         <div className="h-64 -ml-3">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chart} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-              <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={46} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+              <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={46} />
               <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-              <RBar dataKey="students" name="Students" fill="#4F46E5" radius={[5, 5, 0, 0]} maxBarSize={30} />
-              <RBar dataKey="faculty"  name="Faculty"  fill="#C026D3" radius={[5, 5, 0, 0]} maxBarSize={30} />
+              <RBar dataKey="students" name="Students" fill="#9E1B32" radius={[5, 5, 0, 0]} maxBarSize={30} />
+              <RBar dataKey="faculty"  name="Faculty"  fill="#8A5A12" radius={[5, 5, 0, 0]} maxBarSize={30} />
             </BarChart>
           </ResponsiveContainer>
         </div>

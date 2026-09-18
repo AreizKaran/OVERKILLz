@@ -57,7 +57,7 @@ export default function Academics() {
           ].map(({ k, label, Icon }) => (
             <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k}
               className={`inline-flex items-center gap-1.5 min-h-[44px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
-                ${kind === k ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+                ${kind === k ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-rule'}`}>
               <Icon size={14} aria-hidden="true" /> {label}
             </button>
           ))}

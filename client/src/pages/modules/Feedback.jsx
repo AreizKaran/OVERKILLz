@@ -20,7 +20,7 @@ function Rating({ value, onChange, label }) {
           <button key={n} type="button" onClick={() => onChange(n)} role="radio" aria-checked={value === n}
             aria-label={`${n} of 5`}
             className="w-11 h-11 grid place-items-center rounded-lg hover:bg-subtle cursor-pointer">
-            <Star size={19} className={n <= value ? 'fill-warn text-warn' : 'text-slate-300'} aria-hidden="true" />
+            <Star size={19} className={n <= value ? 'fill-warn text-warn' : 'text-rule'} aria-hidden="true" />
           </button>
         ))}
       </div>
@@ -130,12 +130,12 @@ export default function Feedback() {
             <div className="h-64 -ml-3">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={AGG} layout="vertical" margin={{ top: 4, right: 16, bottom: 0, left: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" horizontal={false} />
-                  <XAxis type="number" domain={[0, 5]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" horizontal={false} />
+                  <XAxis type="number" domain={[0, 5]} tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="criterion" width={132}
-                    tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                    tick={{ fontSize: 11, fill: '#5A5248' }} axisLine={false} tickLine={false} />
                   <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                  <RBar dataKey="score" name="Average (of 5)" fill="#4F46E5" radius={[0, 5, 5, 0]} maxBarSize={26} />
+                  <RBar dataKey="score" name="Average (of 5)" fill="#9E1B32" radius={[0, 5, 5, 0]} maxBarSize={26} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -148,7 +148,7 @@ export default function Feedback() {
               <div>
                 <div className="flex gap-0.5">
                   {[1, 2, 3, 4, 5].map((n) => (
-                    <Star key={n} size={15} className={n <= 4 ? 'fill-warn text-warn' : 'text-slate-300'} aria-hidden="true" />
+                    <Star key={n} size={15} className={n <= 4 ? 'fill-warn text-warn' : 'text-rule'} aria-hidden="true" />
                   ))}
                 </div>
                 <p className="text-xs text-muted mt-1">Department average 4.21</p>
@@ -198,7 +198,7 @@ export default function Feedback() {
         ].map(({ k, label, Icon }) => (
           <button key={k} onClick={() => { setMode(k); setSelected(null); setScores({}) }} aria-pressed={mode === k}
             className={`inline-flex items-center gap-1.5 min-h-[44px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
-              ${mode === k ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+              ${mode === k ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-rule'}`}>
             <Icon size={15} aria-hidden="true" /> {label}
           </button>
         ))}

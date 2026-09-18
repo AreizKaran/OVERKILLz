@@ -31,7 +31,7 @@ export default function Faculty() {
           {depts.map((d) => (
             <button key={d} onClick={() => setDept(d)} aria-pressed={dept === d}
               className={`shrink-0 min-h-[44px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
-                ${dept === d ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+                ${dept === d ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-rule'}`}>
               {d}
             </button>
           ))}

@@ -4,40 +4,53 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Deep indigo anchor — richer than the old flat navy.
-        navy: { DEFAULT: '#1E1B4B', 50: '#EEF2FF', 700: '#312E81', 900: '#171449' },
-        // Vivid indigo primary. Every fill below clears 4.5:1 under white text.
-        brand: { DEFAULT: '#4F46E5', 50: '#EEF2FF', 100: '#E0E7FF', 600: '#4F46E5', 700: '#4338CA' },
-        violet: { DEFAULT: '#7C3AED', 50: '#F5F3FF', 100: '#EDE9FE', 600: '#7C3AED', 700: '#6D28D9' },
-        accent: { DEFAULT: '#C026D3', 50: '#FDF4FF', 100: '#FAE8FF', 600: '#C026D3', 700: '#A21CAF' },
-        ok:   { DEFAULT: '#10B981', 50: '#ECFDF5', 600: '#059669', 700: '#047857' },
-        warn: { DEFAULT: '#F59E0B', 50: '#FFFBEB', 700: '#92400E', 800: '#78350F' },  // 700 darkened: #B45309 was 4.44:1 on the new subtle
-        bad:  { DEFAULT: '#F43F5E', 50: '#FFF1F2', 600: '#E11D48', 700: '#BE123C' },
-        cyan: { DEFAULT: '#06B6D4', 50: '#ECFEFF', 700: '#0E7490' },
-        canvas: '#F7F7FB',
+        /* Ink on paper. The register this replaces was printed, and the palette
+           says so: warm stock, dark ink, one institutional seal colour, and
+           status hues used ONLY where they encode state. */
+        ink:     { DEFAULT: '#1A1714', 700: '#2E2922', 500: '#5A5248' },
+        paper:   '#FAF8F5',
         surface: '#FFFFFF',
-        subtle: '#F1F0F9',
-        ink: '#100E24',
-        muted: '#57536E',   // 5.6:1 on subtle, 6.2:1 on surface
-        line: '#E5E3F0',
+        subtle:  '#F2EFE9',
+        muted:   '#5A5248',
+        line:    '#E3DDD2',
+        rule:    '#D4CCBD',
+
+        /* The institutional seal. Swap for SMIT's official hex — it is one token. */
+        seal: { DEFAULT: '#9E1B32', 700: '#8C1729', 900: '#7A1524', 50: '#FBF0F1', 100: '#F6E0E3' },
+
+        /* Status. These are the only other colours in the product. */
+        ok:   { DEFAULT: '#1F6B4A', 50: '#EDF6F1', 700: '#1A5A3E' },
+        warn: { DEFAULT: '#8A5A12', 50: '#FAF3E6', 700: '#754B0C', 800: '#5E3C08' },
+        bad:  { DEFAULT: '#A3241C', 50: '#FBEFEE', 600: '#8F1F18', 700: '#7C1B15' },
+
+        /* Legacy aliases so existing class names keep resolving. */
+        navy:   { DEFAULT: '#1A1714', 50: '#F2EFE9', 700: '#2E2922', 900: '#100E0C' },
+        brand:  { DEFAULT: '#9E1B32', 50: '#FBF0F1', 100: '#F6E0E3', 600: '#9E1B32', 700: '#8C1729' },
+        accent: { DEFAULT: '#8A5A12', 50: '#FAF3E6', 600: '#754B0C', 700: '#5E3C08' },
+        violet: { DEFAULT: '#7A1524', 50: '#FBF0F1', 100: '#F6E0E3', 600: '#8C1729', 700: '#7A1524' },
+        cyan:   { DEFAULT: '#1F6B4A', 50: '#EDF6F1', 700: '#1A5A3E' },
+        canvas: '#FAF8F5',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       borderRadius: { xl: '0.875rem', '2xl': '1.125rem' },
       boxShadow: {
-        card: '0 1px 2px rgba(30,27,75,.05), 0 1px 3px rgba(30,27,75,.07)',
-        lift: '0 10px 28px -8px rgba(79,70,229,.22), 0 4px 10px -4px rgba(30,27,75,.10)',
-        glow: '0 12px 32px -10px rgba(79,70,229,.45)',
-        tile: '0 8px 24px -10px rgba(30,27,75,.35)',
+        card: '0 1px 1px rgba(26,23,20,.04)',
+        lift: '0 4px 14px -6px rgba(26,23,20,.14), 0 1px 3px rgba(26,23,20,.06)',
+        glow: '0 2px 6px -2px rgba(158,27,50,.35)',
+        tile: '0 1px 1px rgba(26,23,20,.04)',
       },
       backgroundImage: {
-        'grad-brand':  'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
-        'grad-violet': 'linear-gradient(135deg, #6D28D9 0%, #A21CAF 100%)',
-        'grad-navy':   'linear-gradient(160deg, #1E1B4B 0%, #312E81 55%, #4338CA 100%)',
-        'grad-rose':   'linear-gradient(135deg, #BE123C 0%, #A21CAF 100%)',
-        'grad-teal':   'linear-gradient(135deg, #0F766E 0%, #0E7490 100%)',
-        'grad-amber':  'linear-gradient(135deg, #C2410C 0%, #BE123C 100%)',
+        /* Flat fills. Kept as names so components need no rewrite. */
+        'grad-brand':  'linear-gradient(180deg, #9E1B32 0%, #8C1729 100%)',
+        'grad-violet': 'linear-gradient(180deg, #2E2922 0%, #1A1714 100%)',
+        'grad-navy':   'linear-gradient(180deg, #211D19 0%, #15120F 100%)',
+        'grad-rose':   'linear-gradient(180deg, #9E1B32 0%, #7A1524 100%)',
+        'grad-teal':   'linear-gradient(180deg, #1F6B4A 0%, #1A5A3E 100%)',
+        'grad-amber':  'linear-gradient(180deg, #8A5A12 0%, #754B0C 100%)',
+        /* Ruled paper, for the sign-in panel. */
+        'ruled': 'repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(255,255,255,.055) 31px, rgba(255,255,255,.055) 32px)',
       },
       fontSize: {
         'display': ['2.25rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],

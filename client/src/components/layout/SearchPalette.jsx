@@ -57,7 +57,7 @@ export default function SearchPalette({ open, onClose }) {
               <Search size={18} className="text-muted shrink-0" aria-hidden="true" />
               <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey}
                 placeholder={cat === 'All' ? 'Search students, faculty, courses, notices…' : `Search ${cat.toLowerCase()}…`}
-                aria-label="Search" className="flex-1 min-w-0 bg-transparent outline-none text-sm placeholder:text-slate-400" />
+                aria-label="Search" className="flex-1 min-w-0 bg-transparent outline-none text-sm placeholder:text-muted/60" />
 
               {/* Scope the search before it runs */}
               <div className="relative shrink-0">

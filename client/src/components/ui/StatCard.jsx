@@ -2,50 +2,50 @@ import { motion } from 'framer-motion'
 import { useCountUp } from '../../lib/hooks'
 
 /**
- * Vivid gradient tile. Every fill clears 4.5:1 under white text, so the bold
- * look does not cost readability — the numbers are the point of the card.
+ * A figure from a register, not a coloured tile.
+ *
+ * The number is the largest thing on the card and set in tabular figures so a
+ * column of them lines up. Colour appears only when the metric carries a state
+ * worth flagging — and then as a single rule above the label, never as a fill
+ * behind the data. A card that is coloured for decoration makes every card
+ * look equally urgent, which is the same as none of them being urgent.
  */
-const TONES = {
-  brand:  'bg-grad-brand',
-  violet: 'bg-grad-violet',
-  navy:   'bg-grad-navy',
-  accent: 'bg-grad-rose',
-  ok:     'bg-grad-teal',
-  warn:   'bg-grad-amber',
-  bad:    'bg-grad-rose',
+const STATE_RULE = {
+  ok:   'bg-ok',
+  warn: 'bg-warn',
+  bad:  'bg-bad',
 }
 
 export default function StatCard({
-  icon: Icon, label, value, suffix = '', decimals = 0, tone = 'brand', foot, index = 0,
+  icon: Icon, label, value, suffix = '', decimals = 0, tone = 'neutral', foot, index = 0,
 }) {
   const n = useCountUp(value)
-  const fill = TONES[tone] ?? TONES.brand
+  const rule = STATE_RULE[tone]           // undefined for neutral metrics
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.4, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05, ease: 'easeOut' }}
       className="h-full"
     >
-      <div className={`${fill} relative h-full rounded-2xl p-4 sm:p-5 text-white shadow-tile overflow-hidden
-                       transition-transform duration-200 hover:-translate-y-1`}>
-        {/* Luminous corner wash — depth without another DOM layer */}
-        <div className="absolute -top-16 -right-12 w-40 h-40 rounded-full bg-white/15 blur-2xl"
-             aria-hidden="true" />
+      <div className="relative h-full bg-surface border border-line rounded-lg p-4 sm:p-5
+                      transition-colors duration-200 hover:border-rule">
+        {/* State rule: present only when the figure means something is off */}
+        {rule && <span className={`absolute inset-x-0 top-0 h-[3px] rounded-t-lg ${rule}`} aria-hidden="true" />}
 
-        <div className="relative flex items-start justify-between gap-3">
-          <span className="text-sm font-medium text-white/85 leading-snug">{label}</span>
-          <span className="w-9 h-9 shrink-0 rounded-xl bg-white/20 backdrop-blur grid place-items-center">
-            <Icon size={17} strokeWidth={2.4} aria-hidden="true" />
-          </span>
+        <div className="flex items-center gap-2 text-muted">
+          {Icon && <Icon size={14} strokeWidth={2} aria-hidden="true" />}
+          <span className="text-[13px] font-medium tracking-wide uppercase">{label}</span>
         </div>
 
-        <div className="relative mt-3 text-3xl font-bold tnum tracking-tight">
-          {n.toFixed(decimals)}{suffix}
+        <div className="mt-3 text-[2.125rem] leading-none font-semibold tnum text-ink tracking-tight">
+          {n.toFixed(decimals)}<span className="text-2xl text-muted font-medium">{suffix}</span>
         </div>
 
-        {foot && <div className="relative mt-1.5 text-xs text-white/75">{foot}</div>}
+        {foot && (
+          <div className="mt-2.5 pt-2.5 border-t border-line text-xs text-muted">{foot}</div>
+        )}
       </div>
     </motion.div>
   )

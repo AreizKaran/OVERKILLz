@@ -45,9 +45,9 @@ export function useMediaQuery(query) {
 
 /** Attendance thresholds drive colour AND text/icon — never colour alone (§1). */
 export function attendanceTone(pct) {
-  if (pct >= 80) return { key: 'ok',   label: 'Healthy',  ring: '#10B981', chip: 'bg-ok-50 text-ok-700' }
-  if (pct >= 75) return { key: 'warn', label: 'Warning',  ring: '#F59E0B', chip: 'bg-warn-50 text-warn-700' }
-  return           { key: 'bad',  label: 'Critical', ring: '#EF4444', chip: 'bg-bad-50 text-bad-700' }
+  if (pct >= 80) return { key: 'ok',   label: 'Healthy',  ring: '#1F6B4A', chip: 'bg-ok-50 text-ok-700' }
+  if (pct >= 75) return { key: 'warn', label: 'Warning',  ring: '#8A5A12', chip: 'bg-warn-50 text-warn-700' }
+  return           { key: 'bad',  label: 'Critical', ring: '#A3241C', chip: 'bg-bad-50 text-bad-700' }
 }
 
 export const inr = (n) => '₹' + n.toLocaleString('en-IN')

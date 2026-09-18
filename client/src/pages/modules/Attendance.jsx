@@ -52,15 +52,15 @@ export default function Attendance() {
           <div className="h-60 -ml-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={ATTENDANCE_MONTHS} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={44} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={44} />
                 <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <ReferenceLine y={75} stroke="#EF4444" strokeDasharray="4 4"
-                  label={{ value: 'Required 75%', position: 'insideTopLeft', fontSize: 11, fill: '#EF4444' }} />
+                <ReferenceLine y={75} stroke="#A3241C" strokeDasharray="4 4"
+                  label={{ value: 'Required 75%', position: 'insideTopLeft', fontSize: 11, fill: '#A3241C' }} />
                 <RBar dataKey="pct" name="Attendance %" radius={[5, 5, 0, 0]} maxBarSize={44}>
                   {ATTENDANCE_MONTHS.map((m) => (
-                    <Cell key={m.month} fill={m.pct >= 80 ? '#10B981' : m.pct >= 75 ? '#F59E0B' : '#EF4444'} />
+                    <Cell key={m.month} fill={m.pct >= 80 ? '#1F6B4A' : m.pct >= 75 ? '#8A5A12' : '#A3241C'} />
                   ))}
                 </RBar>
               </BarChart>

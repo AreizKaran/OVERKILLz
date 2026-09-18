@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, useReducedMotion } from 'framer-motion'
-import { GraduationCap, Eye, EyeOff, Loader2, Check, ShieldCheck, CalendarCheck, TrendingUp, Bell } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { GraduationCap, Eye, EyeOff, Loader2, Check, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { isLive } from '../lib/api'
 
@@ -9,13 +9,6 @@ const ROLES = [
   { key: 'student', label: 'Student', hint: '202100114' },
   { key: 'faculty', label: 'Faculty', hint: 'SMIT-F-0418' },
   { key: 'admin',   label: 'Administrator', hint: 'SMIT-A-0032' },
-]
-
-const FLOATERS = [
-  { icon: CalendarCheck, label: 'Attendance', value: '78%',  cls: 'top-[14%] left-[6%]',   delay: 0 },
-  { icon: TrendingUp,    label: 'CGPA',       value: '8.24', cls: 'top-[32%] right-[4%]',  delay: 0.6 },
-  { icon: Bell,          label: 'Notice',     value: 'Exam schedule', cls: 'bottom-[26%] left-[10%]', delay: 1.2 },
-  { icon: ShieldCheck,   label: 'Session',    value: 'Secure', cls: 'bottom-[12%] right-[8%]', delay: 1.8 },
 ]
 
 export default function Login() {
@@ -27,7 +20,6 @@ export default function Login() {
   const [error, setError] = useState('')
   const { login } = useAuth()
   const nav = useNavigate()
-  const reduce = useReducedMotion()
 
   const submit = async (e) => {
     e.preventDefault()
@@ -52,75 +44,46 @@ export default function Login() {
   return (
     <div className="min-h-dvh grid lg:grid-cols-[1.05fr_1fr]">
       {/* ---------- Left: brand + animated campus graphic (desktop only) ---------- */}
-      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-grad-navy text-white p-10">
-        {/* Aurora mesh — three luminous fields over the indigo base */}
-        <motion.div className="absolute inset-0" aria-hidden="true"
-          animate={reduce ? {} : { backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'] }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            backgroundSize: '160% 160%',
-            backgroundImage:
-              'radial-gradient(55rem 38rem at 18% 12%, rgba(124,58,237,.75) 0%, transparent 58%),' +
-              'radial-gradient(45rem 34rem at 88% 78%, rgba(192,38,211,.60) 0%, transparent 60%),' +
-              'radial-gradient(40rem 30rem at 62% 30%, rgba(6,182,212,.38) 0%, transparent 62%)',
-          }} />
-        <div className="absolute inset-0" aria-hidden="true"
-             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px)', backgroundSize: '56px 56px' }} />
+      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-subtle text-ink p-10 lg:p-12 border-r border-line">
+        {/* Nothing behind the type. The panel is paper. */}
 
         <div className="relative flex items-center gap-3">
-          <span className="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur ring-1 ring-white/25 grid place-items-center">
+          <span className="w-9 h-9 rounded bg-seal text-white grid place-items-center shrink-0">
             <GraduationCap size={20} aria-hidden="true" />
           </span>
           <div>
-            <div className="font-semibold leading-tight">Sikkim Manipal Institute of Technology</div>
-            <div className="text-xs text-white/60 leading-tight">Majhitar, Rangpo, East Sikkim</div>
+            <div className="text-sm font-semibold leading-tight tracking-tight">Sikkim Manipal Institute of Technology</div>
+            <div className="text-xs text-muted leading-tight mt-0.5">Majhitar, East Sikkim</div>
           </div>
         </div>
 
         <div className="relative max-w-md">
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="text-[2.75rem] font-bold leading-[1.08] tracking-tight">
-            Academic Management System
-          </motion.h1>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}>
+            <h1 className="text-[2.1rem] font-semibold leading-[1.15] tracking-[-0.02em] max-w-md">
+              Academic Management System
+            </h1>
+          </motion.div>
           <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12, ease: 'easeOut' }}
-            className="mt-4 text-white/75 leading-relaxed text-[15px]">
+            className="mt-4 text-muted leading-relaxed text-[15px] max-w-sm">
             One secure platform for academics, administration, communication and student services.
           </motion.p>
 
-          <div className="relative h-56 mt-10" aria-hidden="true">
-            {FLOATERS.map((f, i) => (
-              <motion.div key={f.label}
-                className={`absolute ${f.cls} rounded-xl bg-white/[0.13] backdrop-blur-md border border-white/25 px-3.5 py-3 min-w-[138px] shadow-lg`}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={reduce ? { opacity: 1, scale: 1 } : { opacity: 1, scale: 1, y: [0, -8, 0] }}
-                transition={reduce ? { duration: 0.4, delay: 0.3 + i * 0.1 } : {
-                  opacity: { duration: 0.5, delay: 0.4 + i * 0.12 },
-                  scale:   { duration: 0.5, delay: 0.4 + i * 0.12 },
-                  y: { duration: 3.6 + i * 0.5, repeat: Infinity, ease: 'easeInOut', delay: f.delay },
-                }}>
-                <div className="flex items-center gap-2 text-[11px] text-white/60">
-                  <f.icon size={12} /> {f.label}
-                </div>
-                <div className="text-sm font-semibold mt-0.5">{f.value}</div>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
-        <p className="relative text-xs text-white/45">
-          © 2026 Sikkim Manipal Institute of Technology · A constituent unit of Sikkim Manipal University
+        <p className="relative text-[11px] text-muted">
+          © 2026 Sikkim Manipal Institute of Technology
         </p>
       </div>
 
       {/* ---------- Right: login card ---------- */}
-      <div className="flex items-center justify-center p-6 sm:p-10 bg-canvas">
+      <div className="flex items-center justify-center p-6 sm:p-10 bg-paper">
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }} className="w-full max-w-sm">
 
           <div className="lg:hidden flex items-center gap-2.5 mb-7">
-            <span className="w-10 h-10 rounded-xl bg-grad-brand text-white grid place-items-center shadow-glow">
+            <span className="w-10 h-10 rounded bg-seal text-white grid place-items-center">
               <GraduationCap size={19} aria-hidden="true" />
             </span>
             <div>
@@ -129,8 +92,8 @@ export default function Login() {
             </div>
           </div>
 
-          <h2 className="text-[1.75rem] font-bold tracking-tight">Sign in</h2>
-          <p className="text-sm text-muted mt-1.5">Use your institute credentials to continue.</p>
+          <h2 className="text-2xl font-semibold tracking-tight">Sign in</h2>
+          <p className="text-sm text-muted mt-2">Use your institute credentials to continue.</p>
 
           <div className="mt-6" role="group" aria-label="Select role">
             <span className="label">I am a</span>
@@ -139,7 +102,7 @@ export default function Login() {
                 <button key={r.key} type="button" onClick={() => pickRole(r)}
                   aria-pressed={role === r.key}
                   className={`min-h-[44px] rounded-lg border text-sm font-medium transition cursor-pointer
-                    ${role === r.key ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+                    ${role === r.key ? 'border-seal bg-seal-50 text-seal-700' : 'border-rule bg-surface text-muted hover:border-ink/25'}`}>
                   {r.label}
                 </button>
               ))}
@@ -192,7 +155,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-xs text-muted mt-6 flex items-start gap-2">
+          <p className="text-xs text-muted mt-8 flex items-start gap-2 leading-relaxed">
             <ShieldCheck size={14} className="mt-0.5 shrink-0 text-ok" aria-hidden="true" />
             <span>{isLive
               ? 'Your credentials are sent over an encrypted connection to the institute server.'

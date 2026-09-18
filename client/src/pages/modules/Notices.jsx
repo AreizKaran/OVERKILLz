@@ -35,7 +35,7 @@ export default function Notices() {
           {CATS.map((c) => (
             <button key={c} onClick={() => setCat(c)} aria-pressed={cat === c}
               className={`shrink-0 min-h-[40px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
-                ${cat === c ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+                ${cat === c ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-rule'}`}>
               {c}
             </button>
           ))}

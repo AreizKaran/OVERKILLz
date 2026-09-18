@@ -16,7 +16,7 @@ function Toggle({ label, hint, defaultOn = true, onToggle }) {
       <button role="switch" aria-checked={on} aria-label={label}
         onClick={() => { setOn(!on); onToggle?.(!on) }}
         className={`relative w-11 h-6 rounded-full shrink-0 transition-colors cursor-pointer
-          ${on ? 'bg-brand' : 'bg-slate-300'}`}>
+          ${on ? 'bg-brand' : 'bg-rule'}`}>
         <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform
           ${on ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
       </button>

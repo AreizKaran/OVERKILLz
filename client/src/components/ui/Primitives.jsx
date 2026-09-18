@@ -36,14 +36,14 @@ export function Badge({ tone = 'neutral', children, icon = true }) {
   )
 }
 
-export function ProgressRing({ value, size = 132, stroke = 11, color = '#4F46E5', label, sub }) {
+export function ProgressRing({ value, size = 132, stroke = 11, color = '#9E1B32', label, sub }) {
   const r = (size - stroke) / 2
   const circ = 2 * Math.PI * r
   return (
     <div className="relative grid place-items-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90" role="img"
            aria-label={`${label ?? value} ${sub ?? ''}`.trim()}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E2E8F0" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E3DDD2" strokeWidth={stroke} />
         <motion.circle
           cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke}
           strokeLinecap="round" strokeDasharray={circ}
@@ -60,7 +60,7 @@ export function ProgressRing({ value, size = 132, stroke = 11, color = '#4F46E5'
   )
 }
 
-export function Bar({ value, tone = '#4F46E5', className = '' }) {
+export function Bar({ value, tone = '#9E1B32', className = '' }) {
   return (
     <div className={`h-2 rounded-full bg-subtle overflow-hidden ${className}`}>
       <motion.div className="h-full rounded-full" style={{ background: tone }}
@@ -74,7 +74,7 @@ export function EmptyState({ icon: Icon, title, body, action }) {
   return (
     <div className="text-center py-10 px-6">
       <div className="mx-auto w-12 h-12 rounded-xl bg-subtle grid place-items-center mb-3">
-        <Icon size={22} className="text-slate-400" aria-hidden="true" />
+        <Icon size={22} className="text-muted/60" aria-hidden="true" />
       </div>
       <p className="font-medium text-ink">{title}</p>
       {body && <p className="text-sm text-muted mt-1 max-w-xs mx-auto">{body}</p>}

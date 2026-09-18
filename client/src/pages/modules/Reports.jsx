@@ -23,11 +23,11 @@ export default function Reports() {
           <div className="h-56 -ml-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={DEPT_ATTENDANCE} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={44} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+                <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={44} />
                 <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <RBar dataKey="pct" name="Attendance %" fill="#4F46E5" radius={[5, 5, 0, 0]} maxBarSize={44} />
+                <RBar dataKey="pct" name="Attendance %" fill="#9E1B32" radius={[5, 5, 0, 0]} maxBarSize={44} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -38,11 +38,11 @@ export default function Reports() {
           <div className="h-56 -ml-3">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={ENROLMENT_TREND} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
-                <YAxis domain={[3200, 4400]} ticks={[3200, 3600, 4000, 4400]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={50} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E3DDD2" vertical={false} />
+                <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} />
+                <YAxis domain={[3200, 4400]} ticks={[3200, 3600, 4000, 4400]} tick={{ fontSize: 12, fill: '#5A5248' }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <Line type="monotone" dataKey="students" name="Students" stroke="#312E81" strokeWidth={2.5} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="students" name="Students" stroke="#1A1714" strokeWidth={2.5} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

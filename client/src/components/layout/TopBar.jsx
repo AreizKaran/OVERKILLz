@@ -18,7 +18,7 @@ export default function TopBar({ title, onSearch }) {
 
       <button onClick={onSearch}
         className="hidden lg:flex items-center gap-2 ml-6 flex-1 max-w-sm h-9 px-3 rounded-lg border border-line
-                   bg-canvas text-muted text-sm hover:border-slate-300 transition cursor-pointer">
+                   bg-canvas text-muted text-sm hover:border-rule transition cursor-pointer">
         <Search size={15} aria-hidden="true" />
         <span>Search…</span>
         <kbd className="ml-auto text-[10px] border border-line rounded px-1.5 py-0.5 bg-surface">Ctrl K</kbd>
@@ -61,12 +61,12 @@ export default function TopBar({ title, onSearch }) {
                   <div className="max-h-80 overflow-y-auto">
                     {items.map((n) => (
                       <div key={n.id} className={`flex gap-3 px-4 py-3 border-b border-line last:border-0 ${n.read ? '' : 'bg-brand-50/40'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${n.read ? 'bg-slate-300' : 'bg-brand'}`} aria-hidden="true" />
+                        <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${n.read ? 'bg-rule' : 'bg-brand'}`} aria-hidden="true" />
                         <div className="min-w-0">
                           <p className="text-sm text-ink leading-snug">{n.title}</p>
                           <p className="text-xs text-muted mt-0.5">{n.time}</p>
                         </div>
-                        {n.read && <Check size={13} className="text-slate-300 ml-auto shrink-0" aria-hidden="true" />}
+                        {n.read && <Check size={13} className="text-rule ml-auto shrink-0" aria-hidden="true" />}
                       </div>
                     ))}
                   </div>

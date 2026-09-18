@@ -113,7 +113,7 @@ export default function Assignments() {
             return (
               <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t}
                 className={`shrink-0 min-h-[40px] px-3.5 rounded-lg text-sm font-medium border transition cursor-pointer
-                  ${tab === t ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-slate-300'}`}>
+                  ${tab === t ? 'border-brand bg-brand-50 text-brand-700' : 'border-line bg-surface text-muted hover:border-rule'}`}>
                 {t} <span className="tnum opacity-60">{n}</span>
               </button>
             )
