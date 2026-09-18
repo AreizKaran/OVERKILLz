@@ -57,10 +57,10 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
         {loading ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />) : (
           <>
-            <StatCard index={0} icon={CalendarCheck} label="Overall attendance" value={overall} suffix="%" tone={tone.key} foot={`${tone.label} · 75% required`} />
-            <StatCard index={1} icon={TrendingUp}   label="Current CGPA"      value={user.cgpa} decimals={2} tone="brand" foot="+0.19 since Sem 4" />
+            <StatCard index={0} icon={CalendarCheck} label="Overall attendance" value={overall} suffix="%" tone="brand" foot={`${tone.label} · 75% required`} />
+            <StatCard index={1} icon={TrendingUp}   label="Current CGPA"      value={user.cgpa} decimals={2} tone="violet" foot="+0.19 since Sem 4" />
             <StatCard index={2} icon={ClipboardList} label="Pending assignments" value={pending.length} tone="warn" foot="1 overdue" />
-            <StatCard index={3} icon={FileText}     label="Upcoming exams"    value={EXAMS.length} tone="navy" foot="From 12 Oct 2026" />
+            <StatCard index={3} icon={FileText}     label="Upcoming exams"    value={EXAMS.length} tone="accent" foot="From 12 Oct 2026" />
           </>
         )}
       </div>
@@ -99,22 +99,22 @@ export default function StudentDashboard() {
               <AreaChart data={CGPA_TREND} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
                 <defs>
                   <linearGradient id="g-cgpa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2563EB" stopOpacity={0.22} />
-                    <stop offset="100%" stopColor="#2563EB" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.22} />
+                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
                 <XAxis dataKey="sem" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[6.5, 9.5]} ticks={[7, 7.5, 8, 8.5, 9]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={44} />
                 <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13, boxShadow: '0 6px 16px -4px rgba(15,23,42,.1)' }} />
-                <Area type="monotone" dataKey="sgpa" stroke="#94A3B8" strokeWidth={2} fill="none" name="SGPA" strokeDasharray="4 4" />
-                <Area type="monotone" dataKey="cgpa" stroke="#2563EB" strokeWidth={2.5} fill="url(#g-cgpa)" name="CGPA" />
+                <Area type="monotone" dataKey="sgpa" stroke="#57536E" strokeWidth={2} fill="none" name="SGPA" strokeDasharray="4 4" />
+                <Area type="monotone" dataKey="cgpa" stroke="#4F46E5" strokeWidth={2.5} fill="url(#g-cgpa)" name="CGPA" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
           <div className="flex items-center gap-5 text-xs text-muted mt-2 pl-2">
             <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand rounded" aria-hidden="true" /> CGPA</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-slate-400 rounded" aria-hidden="true" /> SGPA</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-muted rounded" aria-hidden="true" /> SGPA</span>
           </div>
         </Card>
       </div>

@@ -49,10 +49,10 @@ export default function AdminDashboard() {
       ) : (
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
         <StatCard index={0} icon={Users}         label="Total students" value={ADMIN_KPIS.students} tone="brand" foot="+77 this year" />
-        <StatCard index={1} icon={GraduationCap} label="Total faculty"  value={ADMIN_KPIS.faculty}  tone="navy"  foot="Across 9 departments" />
+        <StatCard index={1} icon={GraduationCap} label="Total faculty"  value={ADMIN_KPIS.faculty}  tone="violet"  foot="Across 9 departments" />
         <StatCard index={2} icon={BookOpen}      label="Active courses" value={ADMIN_KPIS.courses}  tone="accent" foot="Autumn 2026" />
         <StatCard index={3} icon={CalendarCheck} label="Attendance rate" value={ADMIN_KPIS.attendance} decimals={1} suffix="%" tone="ok" foot="Institute average" />
-        <StatCard index={4} icon={IndianRupee}   label="Fee collection" value={ADMIN_KPIS.collected} decimals={2} suffix=" Cr" tone="ok" foot="81% of demand" />
+        <StatCard index={4} icon={IndianRupee}   label="Fee collection" value={ADMIN_KPIS.collected} decimals={2} suffix=" Cr" tone="navy" foot="81% of demand" />
         <StatCard index={5} icon={Inbox}         label="Pending requests" value={ADMIN_KPIS.pending} tone="warn" foot="Needs action" />
       </div>
       )}
@@ -65,15 +65,15 @@ export default function AdminDashboard() {
               <AreaChart data={ENROLMENT_TREND} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
                 <defs>
                   <linearGradient id="g-enrol" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#14213D" stopOpacity={0.2} />
-                    <stop offset="100%" stopColor="#14213D" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#312E81" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#312E81" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
                 <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[3200, 4400]} ticks={[3200, 3600, 4000, 4400]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <Area type="monotone" dataKey="students" name="Students" stroke="#14213D" strokeWidth={2.5} fill="url(#g-enrol)" />
+                <Area type="monotone" dataKey="students" name="Students" stroke="#312E81" strokeWidth={2.5} fill="url(#g-enrol)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

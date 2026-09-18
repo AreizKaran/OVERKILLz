@@ -27,7 +27,7 @@ export default function Reports() {
                 <XAxis dataKey="dept" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={44} />
                 <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <RBar dataKey="pct" name="Attendance %" fill="#2563EB" radius={[5, 5, 0, 0]} maxBarSize={44} />
+                <RBar dataKey="pct" name="Attendance %" fill="#4F46E5" radius={[5, 5, 0, 0]} maxBarSize={44} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -42,7 +42,7 @@ export default function Reports() {
                 <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[3200, 4400]} ticks={[3200, 3600, 4000, 4400]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <Line type="monotone" dataKey="students" name="Students" stroke="#14213D" strokeWidth={2.5} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="students" name="Students" stroke="#312E81" strokeWidth={2.5} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

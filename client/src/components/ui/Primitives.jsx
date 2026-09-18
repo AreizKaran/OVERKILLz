@@ -9,7 +9,7 @@ export function SectionHead({ title, sub, action }) {
   return (
     <div className="flex items-end justify-between gap-4 mb-3">
       <div className="min-w-0">
-        <h2 className="text-base font-semibold text-ink truncate">{title}</h2>
+        <h2 className="text-[17px] font-bold text-ink tracking-tight truncate">{title}</h2>
         {sub && <p className="text-sm text-muted mt-0.5">{sub}</p>}
       </div>
       {action}
@@ -36,7 +36,7 @@ export function Badge({ tone = 'neutral', children, icon = true }) {
   )
 }
 
-export function ProgressRing({ value, size = 132, stroke = 11, color = '#2563EB', label, sub }) {
+export function ProgressRing({ value, size = 132, stroke = 11, color = '#4F46E5', label, sub }) {
   const r = (size - stroke) / 2
   const circ = 2 * Math.PI * r
   return (
@@ -60,7 +60,7 @@ export function ProgressRing({ value, size = 132, stroke = 11, color = '#2563EB'
   )
 }
 
-export function Bar({ value, tone = '#2563EB', className = '' }) {
+export function Bar({ value, tone = '#4F46E5', className = '' }) {
   return (
     <div className={`h-2 rounded-full bg-subtle overflow-hidden ${className}`}>
       <motion.div className="h-full rounded-full" style={{ background: tone }}

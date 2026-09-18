@@ -52,14 +52,23 @@ export default function Login() {
   return (
     <div className="min-h-dvh grid lg:grid-cols-[1.05fr_1fr]">
       {/* ---------- Left: brand + animated campus graphic (desktop only) ---------- */}
-      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-navy text-white p-10">
-        <div className="absolute inset-0 opacity-[0.55]" aria-hidden="true"
-             style={{ backgroundImage: 'radial-gradient(60rem 40rem at 20% 10%, #1D4ED8 0%, transparent 55%), radial-gradient(40rem 30rem at 90% 80%, #F97316 0%, transparent 55%)' }} />
+      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-grad-navy text-white p-10">
+        {/* Aurora mesh — three luminous fields over the indigo base */}
+        <motion.div className="absolute inset-0" aria-hidden="true"
+          animate={reduce ? {} : { backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            backgroundSize: '160% 160%',
+            backgroundImage:
+              'radial-gradient(55rem 38rem at 18% 12%, rgba(124,58,237,.75) 0%, transparent 58%),' +
+              'radial-gradient(45rem 34rem at 88% 78%, rgba(192,38,211,.60) 0%, transparent 60%),' +
+              'radial-gradient(40rem 30rem at 62% 30%, rgba(6,182,212,.38) 0%, transparent 62%)',
+          }} />
         <div className="absolute inset-0" aria-hidden="true"
-             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)', backgroundSize: '56px 56px' }} />
+             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px)', backgroundSize: '56px 56px' }} />
 
         <div className="relative flex items-center gap-3">
-          <span className="w-10 h-10 rounded-xl bg-white/12 grid place-items-center">
+          <span className="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur ring-1 ring-white/25 grid place-items-center">
             <GraduationCap size={20} aria-hidden="true" />
           </span>
           <div>
@@ -71,19 +80,19 @@ export default function Login() {
         <div className="relative max-w-md">
           <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="text-4xl font-semibold leading-[1.15] tracking-tight">
+            className="text-[2.75rem] font-bold leading-[1.08] tracking-tight">
             Academic Management System
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12, ease: 'easeOut' }}
-            className="mt-4 text-white/70 leading-relaxed">
+            className="mt-4 text-white/75 leading-relaxed text-[15px]">
             One secure platform for academics, administration, communication and student services.
           </motion.p>
 
           <div className="relative h-56 mt-10" aria-hidden="true">
             {FLOATERS.map((f, i) => (
               <motion.div key={f.label}
-                className={`absolute ${f.cls} rounded-xl bg-white/10 backdrop-blur border border-white/15 px-3 py-2.5 min-w-[132px]`}
+                className={`absolute ${f.cls} rounded-xl bg-white/[0.13] backdrop-blur-md border border-white/25 px-3.5 py-3 min-w-[138px] shadow-lg`}
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={reduce ? { opacity: 1, scale: 1 } : { opacity: 1, scale: 1, y: [0, -8, 0] }}
                 transition={reduce ? { duration: 0.4, delay: 0.3 + i * 0.1 } : {
@@ -111,7 +120,7 @@ export default function Login() {
           transition={{ duration: 0.5, ease: 'easeOut' }} className="w-full max-w-sm">
 
           <div className="lg:hidden flex items-center gap-2.5 mb-7">
-            <span className="w-10 h-10 rounded-xl bg-navy text-white grid place-items-center">
+            <span className="w-10 h-10 rounded-xl bg-grad-brand text-white grid place-items-center shadow-glow">
               <GraduationCap size={19} aria-hidden="true" />
             </span>
             <div>
@@ -120,7 +129,7 @@ export default function Login() {
             </div>
           </div>
 
-          <h2 className="text-2xl font-semibold tracking-tight">Sign in</h2>
+          <h2 className="text-[1.75rem] font-bold tracking-tight">Sign in</h2>
           <p className="text-sm text-muted mt-1.5">Use your institute credentials to continue.</p>
 
           <div className="mt-6" role="group" aria-label="Select role">

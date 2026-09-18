@@ -135,7 +135,7 @@ export default function Feedback() {
                   <YAxis type="category" dataKey="criterion" width={132}
                     tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} />
                   <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                  <RBar dataKey="score" name="Average (of 5)" fill="#2563EB" radius={[0, 5, 5, 0]} maxBarSize={26} />
+                  <RBar dataKey="score" name="Average (of 5)" fill="#4F46E5" radius={[0, 5, 5, 0]} maxBarSize={26} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

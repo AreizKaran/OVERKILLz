@@ -93,7 +93,7 @@ export default function FacultyDashboard() {
                 <XAxis dataKey="band" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} interval={0} />
                 <YAxis tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={40} />
                 <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <RBar dataKey="n" name="Students" fill="#2563EB" radius={[5, 5, 0, 0]} maxBarSize={44} />
+                <RBar dataKey="n" name="Students" fill="#4F46E5" radius={[5, 5, 0, 0]} maxBarSize={44} />
               </BarChart>
             </ResponsiveContainer>
           </div>

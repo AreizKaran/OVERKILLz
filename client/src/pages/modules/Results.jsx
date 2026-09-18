@@ -28,7 +28,7 @@ export default function Results() {
     <div className="space-y-5">
       <div className="grid lg:grid-cols-3 gap-5">
         <Card className="p-5 flex flex-col items-center justify-center">
-          <ProgressRing value={(8.24 / 10) * 100} size={156} stroke={12} color="#2563EB" label="8.24" sub="Cumulative GPA" />
+          <ProgressRing value={(8.24 / 10) * 100} size={156} stroke={12} color="#4F46E5" label="8.24" sub="Cumulative GPA" />
           <div className="flex gap-6 mt-5 text-center">
             <div><div className="text-lg font-semibold tnum">{sgpa}</div><div className="text-xs text-muted">Sem V SGPA</div></div>
             <div><div className="text-lg font-semibold tnum">{credits}</div><div className="text-xs text-muted">Credits earned</div></div>
@@ -44,8 +44,8 @@ export default function Results() {
                 <XAxis dataKey="sem" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[6.5, 9.5]} ticks={[7, 7.5, 8, 8.5, 9]} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} width={44} />
                 <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                <Line type="monotone" dataKey="cgpa" name="CGPA" stroke="#2563EB" strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#2563EB' }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="cgpa" name="CGPA" stroke="#4F46E5" strokeWidth={2.5}
+                  dot={{ r: 4, fill: '#4F46E5' }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
